@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection 취약점 분석 및 시큐어 코딩</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 25px;
+        }
+        
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #764ba2;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .result.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .query-display {
+            margin-top: 15px;
+            background: #f5f5f5;
+            padding: 12px;
+            border-left: 4px solid #667eea;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            word-break: break-all;
+        }
+        
+        .info-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 25px;
+        }
+        
+        .info-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5em;
+            border-bottom: 3px solid #764ba2;
+            padding-bottom: 10px;
+        }
+        
+        .test-account,
+        .injection-example {
+            background: #f9f9f9;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+            border-radius: 3px;
+        }
+        
+        .test-account strong,
+        .injection-example strong {
+            color: #667eea;
+        }
+        
+        .injection-example {
+            border-left-color: #dc3545;
+        }
+        
+        .injection-example strong {
+            color: #dc3545;
+        }
+        
+        .comparison-section {
+            margin-top: 30px;
+        }
+        
+        .comparison-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .vulnerable {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        .secure {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 SQL Injection 취약점 분석 및 시큐어 코딩</h1>
+        <p class="subtitle">학습용 로그인 시스템 - 취약한 vs 안전한 쿼리 비교</p>
+        
+        <div class="content-wrapper">
+            <!-- 회원가입 패널 -->
+            <div class="panel">
+                <h2>회원가입</h2>
+                <div class="form-group">
+                    <label for="register-username">아이디</label>
+                    <input type="text" id="register-username" placeholder="3자 이상">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">비밀번호</label>
+                    <input type="password" id="register-password" placeholder="4자 이상">
+                </div>
+                <button onclick="register()">회원가입</button>
+                <div id="register-result" class="result"></div>
+            </div>
+            
+            <!-- 취약한 로그인 패널 -->
+            <div class="panel">
+                <h2>취약한 로그인 (SQL Injection)</h2>
+                <p style="color: #dc3545; margin-bottom: 15px; font-size: 0.9em;">
+                    ⚠️ 이 로그인은 SQL Injection 공격에 취약합니다
+                </p>
+                <div class="form-group">
+                    <label for="vulnerable-username">아이디</label>
+                    <input type="text" id="vulnerable-username" placeholder="아이디 입력">
+                </div>
+                <div class="form-group">
+                    <label for="vulnerable-password">비밀번호</label>
+                    <input type="password" id="vulnerable-password" placeholder="비밀번호 입력">
+                </div>
+                <button onclick="vulnerableLogin()">로그인 (취약함)</button>
+                <div id="vulnerable-result" class="result"></div>
+            </div>
+            
+            <!-- 안전한 로그인 패널 -->
+            <div class="panel">
+                <h2>안전한 로그인 (Prepared Statement)</h2>
+                <p style="color: #28a745; margin-bottom: 15px; font-size: 0.9em;">
+                    ✓ 이 로그인은 Prepared Statement로 보호됩니다
+                </p>
+                <div class="form-group">
+                    <label for="secure-username">아이디</label>
+                    <input type="text" id="secure-username" placeholder="아이디 입력">
+                </div>
+                <div class="form-group">
+                    <label for="secure-password">비밀번호</label>
+                    <input type="password" id="secure-password" placeholder="비밀번호 입력">
+                </div>
+                <button onclick="secureLogin()">로그인 (안전함)</button>
+                <div id="secure-result" class="result"></div>
+            </div>
+            
+            <!-- 정보 패널 -->
+            <div class="panel">
+                <h2>📚 학습 정보</h2>
+                <div id="test-accounts"></div>
+                <div id="injection-examples"></div>
+                <button onclick="loadInfo()" style="margin-top: 20px;">테스트 계정 & 공격 페이로드 보기</button>
+            </div>
+        </div>
+        
+        <!-- 비교 섹션 -->
+        <div class="info-section comparison-section">
+            <h2>🔍 취약한 vs 안전한 쿼리 비교</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>항목</th>
+                        <th class="vulnerable">취약한 방식</th>
+                        <th class="secure">안전한 방식</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>쿼리 작성법</strong></td>
+                        <td>문자열 포맷팅 (f-string, format)</td>
+                        <td>Prepared Statement (?)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>예제</strong></td>
+                        <td><code>f"SELECT * FROM users WHERE username = '{username}'"</code></td>
+                        <td><code>cursor.execute("SELECT * FROM users WHERE username = ?", (username,))</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>SQL Injection</strong></td>
+                        <td class="vulnerable">공격 가능 ❌</td>
+                        <td class="secure">공격 차단 ✓</td>
+                    </tr>
+                    <tr>
+                        <td><strong>입력값 검증</strong></td>
+                        <td>필수 (하지만 불완전)</td>
+                        <td>자동 처리 (신뢰할 수 있음)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>권장도</strong></td>
+                        <td class="vulnerable">사용 금지</td>
+                        <td class="secure">권장</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>🎯 주요 차이점</h3>
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; line-height: 1.8;">
+                <p><strong>1. 취약한 방식:</strong> 사용자 입력이 그대로 SQL 쿼리에 포함됨 → SQL 구문으로 해석됨 → 공격 가능</p>
+                <p><strong>2. 안전한 방식:</strong> 입력값이 쿼리 매개변수로 전달됨 → 데이터로만 처리됨 → 공격 불가능</p>
+                <p><strong>3. 예시:</strong> 입력값 <code>' OR '1'='1</code>을 사용했을 때,</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>취약함: <code>...WHERE username = '' OR '1'='1'</code> → 모든 행 반환</li>
+                    <li>안전함: <code>...WHERE username = ?</code> (? = 실제 문자열) → 데이터로 처리</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 회원가입
+        async function register() {
+            const username = document.getElementById('register-username').value.trim();
+            const password = document.getElementById('register-password').value.trim();
+            const resultDiv = document.getElementById('register-result');
+            
+            if (!username || !password) {
+                showResult(resultDiv, '아이디와 비밀번호를 입력해주세요', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username, password})
+                });
+                
+                const data = await response.json();
+                showResult(resultDiv, data.message, data.success ? 'success' : 'error');
+                
+                if (data.success) {
+                    document.getElementById('register-username').value = '';
+                    document.getElementById('register-password').value = '';
+                }
+            } catch (error) {
+                showResult(resultDiv, `오류: ${error.message}`, 'error');
+            }
+        }
+        
+        // 취약한 로그인
+        async function vulnerableLogin() {
+            const username = document.getElementById('vulnerable-username').value;
+            const password = document.getElementById('vulnerable-password').value;
+            const resultDiv = document.getElementById('vulnerable-result');
+            
+            if (!username || !password) {
+                showResult(resultDiv, '아이디와 비밀번호를 입력해주세요', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/vulnerable-login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username, password})
+                });
+                
+                const data = await response.json();
+                showResultWithQuery(resultDiv, data.message, data.success ? 'success' : 'warning', data.query);
+            } catch (error) {
+                showResult(resultDiv, `오류: ${error.message}`, 'error');
+            }
+        }
+        
+        // 안전한 로그인
+        async function secureLogin() {
+            const username = document.getElementById('secure-username').value;
+            const password = document.getElementById('secure-password').value;
+            const resultDiv = document.getElementById('secure-result');
+            
+            if (!username || !password) {
+                showResult(resultDiv, '아이디와 비밀번호를 입력해주세요', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/secure-login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username, password})
+                });
+                
+                const data = await response.json();
+                showResultWithQuery(resultDiv, data.message, data.success ? 'success' : 'warning', data.query);
+            } catch (error) {
+                showResult(resultDiv, `오류: ${error.message}`, 'error');
+            }
+        }
+        
+        // 결과 표시 함수
+        function showResult(element, message, type) {
+            element.textContent = message;
+            element.className = `result show ${type}`;
+        }
+        
+        function showResultWithQuery(element, message, type, query) {
+            element.innerHTML = `<div>${message}</div><div class="query-display"><strong>실행된 쿼리:</strong><br>${query}</div>`;
+            element.className = `result show ${type}`;
+        }
+        
+        // 테스트 정보 로드
+        async function loadInfo() {
+            try {
+                const response = await fetch('/api/test-accounts');
+                const data = await response.json();
+                
+                let html = '<div style="margin-bottom: 20px;"><h4 style="color: #333; margin-bottom: 10px;">📝 테스트 계정 (아이디/비밀번호)</h4>';
+                data.accounts.forEach(acc => {
+                    html += `<div class="test-account"><strong>${acc.username}</strong> / ${acc.password}</div>`;
+                });
+                html += '</div>';
+                
+                html += '<div><h4 style="color: #dc3545; margin-bottom: 10px;">⚠️ SQL Injection 공격 예제</h4>';
+                data.injection_examples.forEach(ex => {
+                    html += `<div class="injection-example"><strong>${ex.payload}</strong><br><small>${ex.description}</small></div>`;
+                });
+                html += '</div>';
+                
+                document.getElementById('test-accounts').innerHTML = html;
+            } catch (error) {
+                alert(`오류: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
