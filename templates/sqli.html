@@ -8,591 +8,263 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-canvas: #f8fafc;
-            --bg-surface: #ffffff;
-            --bg-surface-hover: #f1f5f9;
-            --bg-elevated: #f8fafc;
-            
-            --border-subtle: #e2e8f0;
-            --border-medium: #cbd5e1;
-            
-            --brand-primary: #4f46e5;
-            --brand-primary-hover: #4338ca;
-            --brand-sky: #0284c7;
-            --brand-emerald: #059669;
-            --brand-rose: #e11d48;
-            
-            --text-heading: #0f172a;
-            --text-body: #334155;
-            --text-muted: #64748b;
-            --text-dim: #94a3b8;
-            
-            --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+    <!-- FontAwesome Icon CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background-color: var(--bg-canvas);
-            color: var(--text-body);
-            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-            min-height: 100vh;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            max-width: 1240px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        /* Navbar */
-        header {
-            border-bottom: 1px solid var(--border-subtle);
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .nav-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 64px;
-        }
-
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 6px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .back-link:hover {
-            background: var(--bg-surface-hover);
-            color: var(--text-heading);
-        }
-
-        .page-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-heading);
-        }
-
-        .mode-toggle {
-            display: flex;
-            background: rgba(15, 23, 42, 0.04);
-            padding: 3px;
-            border-radius: 8px;
-            border: 1px solid var(--border-subtle);
-        }
-
-        .mode-btn {
-            padding: 6px 14px;
-            border-radius: 6px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .mode-btn.active {
-            background: var(--bg-surface);
-            color: var(--brand-primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        /* Progress Bar Card */
-        .timeline-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin: 24px 0;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .timeline-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-        }
-
-        .progress-bar-bg {
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 999px;
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            width: 16.6%;
-            background: var(--brand-primary);
-            border-radius: 999px;
-            transition: width 0.3s ease;
-        }
-
-        .step-timeline {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-        }
-
-        .step-item {
-            flex: 1;
-            min-width: 140px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            background: var(--bg-canvas);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        .step-item.active {
-            background: rgba(79, 70, 229, 0.08);
-            border-color: var(--brand-primary);
-            color: var(--brand-primary);
-            font-weight: 700;
-        }
-
-        .step-item.completed {
-            border-color: rgba(5, 150, 105, 0.3);
-            color: var(--brand-emerald);
-        }
-
-        /* Workspace Grid */
-        .workspace {
-            display: grid;
-            grid-template-columns: 1fr 1.15fr;
-            gap: 20px;
-            margin-bottom: 60px;
-        }
-
-        @media (max-width: 992px) { .workspace { grid-template-columns: 1fr; } }
-
-        .panel {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-subtle);
-            margin-bottom: 20px;
-        }
-
-        .panel-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-heading);
-        }
-
-        .tag {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .tag-indigo { background: rgba(79, 70, 229, 0.08); color: var(--brand-primary); border: 1px solid rgba(79, 70, 229, 0.2); }
-        .tag-rose { background: rgba(225, 29, 72, 0.08); color: var(--brand-rose); border: 1px solid rgba(225, 29, 72, 0.2); }
-        .tag-emerald { background: rgba(5, 150, 105, 0.08); color: var(--brand-emerald); border: 1px solid rgba(5, 150, 105, 0.2); }
-
-        .desc-box {
-            background: var(--bg-canvas);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-
-        .desc-box h4 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--text-heading);
-            margin-bottom: 6px;
-        }
-
-        .desc-box p {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-
-        .concept-note {
-            background: rgba(79, 70, 229, 0.05);
-            border-left: 3px solid var(--brand-primary);
-            padding: 8px 12px;
-            font-size: 0.825rem;
-            color: var(--text-body);
-            border-radius: 0 6px 6px 0;
-        }
-
-        .preset-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
-        }
-
-        .preset-chip {
-            background: var(--bg-canvas);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-body);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.825rem;
-            cursor: pointer;
-            margin-right: 6px;
-            margin-bottom: 6px;
-        }
-
-        .preset-chip:hover {
-            background: var(--bg-surface-hover);
-            border-color: var(--brand-primary);
-        }
-
-        .preset-chip code {
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--brand-primary);
-        }
-
-        .form-group { margin-bottom: 16px; }
-        
-        .form-label {
-            display: block;
-            font-size: 0.825rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 14px;
-            background: #ffffff;
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            color: var(--text-heading);
-            font-size: 0.9rem;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--brand-primary);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 10px 18px;
-            border-radius: 8px;
-            border: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-indigo { background: var(--brand-primary); color: white; }
-        .btn-indigo:hover { background: var(--brand-primary-hover); }
-        .btn-ghost { background: var(--bg-canvas); border: 1px solid var(--border-subtle); color: var(--text-body); }
-        .btn-ghost:hover { background: var(--bg-surface-hover); }
-
-        /* Code & Query Inspector */
-        .editor-container {
-            background: #0f172a;
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            overflow: hidden;
-        }
-
-        .editor-bar {
-            background: #1e293b;
-            padding: 8px 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-        }
-
-        .editor-body {
-            padding: 14px;
-            color: #e2e8f0;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        .editor-body .kw { color: #f43f5e; font-weight: 600; }
-        .editor-body .str { color: #34d399; }
-
-        .result-callout {
-            padding: 14px 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-            font-size: 0.875rem;
-            display: none;
-        }
-
-        .result-callout.show { display: block; }
-        .result-callout.alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-        .result-callout.alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
-        .result-callout.alert-muted { background: var(--bg-canvas); border: 1px solid var(--border-subtle); color: var(--text-muted); }
-
-        /* Code Switch Tabs */
-        .tab-bar {
-            display: flex;
-            gap: 4px;
-            background: var(--bg-canvas);
-            padding: 3px;
-            border-radius: 8px;
-            border: 1px solid var(--border-subtle);
-            margin-bottom: 10px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 6px 12px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 6px;
-        }
-
-        .tab-btn.active {
-            background: var(--bg-surface);
-            color: var(--brand-primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
-
-        /* Quiz Component */
-        .quiz-card {
-            background: var(--bg-canvas);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .quiz-opt {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin-top: 8px;
-            font-size: 0.875rem;
-            cursor: pointer;
-        }
-
-        .quiz-opt:hover {
-            border-color: var(--brand-primary);
-            background: rgba(79, 70, 229, 0.04);
-        }
-
-        .quiz-opt.correct { background: #f0fdf4; border-color: #86efac; color: #166534; }
-        .quiz-opt.wrong { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
-
-        /* Sandbox Mode Layout */
-        .sandbox-layout { display: none; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 992px) { .sandbox-layout { grid-template-columns: 1fr; } }
-    </style>
+    </script>
 </head>
-<body>
-    <!-- Navbar -->
-    <header>
-        <div class="container">
-            <div class="nav-inner">
-                <div class="nav-left">
-                    <a href="/" class="back-link">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+<body class="bg-slate-50/60 text-slate-700 font-sans min-h-screen antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Left Nav -->
+                <div class="flex items-center gap-4">
+                    <a href="/" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 hover:text-slate-900 text-xs font-semibold transition-all">
+                        <i class="fa-solid fa-arrow-left text-slate-500"></i>
                         <span>포털 허브</span>
                     </a>
-                    <div class="page-title-wrap">
-                        <span class="page-title">SQL Injection & DB 보안 스튜디오</span>
+                    <div class="h-4 w-px bg-slate-200"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="flex h-2.5 w-2.5 rounded-full bg-indigo-600"></span>
+                        <h1 class="text-sm font-bold text-slate-900 tracking-tight">SQL Injection & DB 보안 스튜디오</h1>
                     </div>
                 </div>
-                <div class="mode-toggle">
-                    <button class="mode-btn active" id="btn-mode-tutorial" onclick="switchMode('tutorial')">🎓 단계별 튜토리얼</button>
-                    <button class="mode-btn" id="btn-mode-sandbox" onclick="switchMode('sandbox')">🧪 자유 샌드박스</button>
+
+                <!-- Right Mode Switcher -->
+                <div class="bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 flex items-center gap-1">
+                    <button id="btn-mode-tutorial" onclick="switchMode('tutorial')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs">
+                        <i class="fa-solid fa-graduation-cap mr-1.5"></i>단계별 튜토리얼
+                    </button>
+                    <button id="btn-mode-sandbox" onclick="switchMode('sandbox')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800">
+                        <i class="fa-solid fa-flask mr-1.5"></i>자유 샌드박스
+                    </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="container">
-        <!-- Tutorial Mode UI -->
-        <div id="tutorial-view">
-            <!-- Progress Card -->
-            <div class="timeline-card">
-                <div class="timeline-header">
-                    <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-muted);">
-                        진행률 <span id="progress-percent" style="color: var(--text-heading); font-family: 'JetBrains Mono', monospace;">16.6%</span>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        
+        <!-- TUTORIAL VIEW -->
+        <div id="tutorial-view" class="space-y-6">
+            
+            <!-- Timeline & Progress Card -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm space-y-4">
+                <div class="flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-slate-500">실습 진행률</span>
+                        <span id="progress-percent" class="font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md">16.7%</span>
+                    </div>
+                    <span id="step-badge" class="px-2.5 py-1 rounded-lg font-mono font-semibold text-xs bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        Step 1 / 6
                     </span>
-                    <span id="step-badge" class="tag tag-indigo">Step 1 / 6</span>
                 </div>
-                <div class="progress-bar-bg">
-                    <div id="progress-fill" class="progress-bar-fill"></div>
+
+                <!-- Progress Fill -->
+                <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div id="progress-fill" class="h-full bg-indigo-600 rounded-full transition-all duration-300 w-1/6"></div>
                 </div>
-                <div class="step-timeline">
-                    <button id="pill-1" class="step-item active" onclick="jumpStep(1)">1. 정상 로그인</button>
-                    <button id="pill-2" class="step-item" onclick="jumpStep(2)">2. 조건 우회</button>
-                    <button id="pill-3" class="step-item" onclick="jumpStep(3)">3. 주석 우회</button>
-                    <button id="pill-4" class="step-item" onclick="jumpStep(4)">4. Prepared Stmt</button>
-                    <button id="pill-5" class="step-item" onclick="jumpStep(5)">5. 코드 비교</button>
-                    <button id="pill-6" class="step-item" onclick="jumpStep(6)">6. 최종 퀴즈</button>
+
+                <!-- Step Tabs -->
+                <div class="flex gap-2 overflow-x-auto pb-1">
+                    <button id="pill-1" onclick="jumpStep(1)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-indigo-700 border-indigo-500 bg-indigo-50/70 shadow-2xs whitespace-nowrap">
+                        1. 정상 로그인
+                    </button>
+                    <button id="pill-2" onclick="jumpStep(2)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap">
+                        2. 기본 SQLi
+                    </button>
+                    <button id="pill-3" onclick="jumpStep(3)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap">
+                        3. 주석 우회
+                    </button>
+                    <button id="pill-4" onclick="jumpStep(4)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap">
+                        4. Prepared Stmt
+                    </button>
+                    <button id="pill-5" onclick="jumpStep(5)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap">
+                        5. 코드 비교
+                    </button>
+                    <button id="pill-6" onclick="jumpStep(6)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap">
+                        6. 최종 퀴즈
+                    </button>
                 </div>
             </div>
 
-            <!-- Workspace -->
-            <div class="workspace">
-                <!-- Left Panel -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <span id="step-title" class="panel-title">1. 정상 로그인 메커니즘 이해하기</span>
-                        <span id="step-tag" class="tag tag-indigo">실습</span>
-                    </div>
+            <!-- Main Workspace Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Left Panel: Form & Controls -->
+                <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-6 flex flex-col justify-between">
+                    <div class="space-y-5">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <h2 id="step-title" class="text-base font-bold text-slate-900">1. 정상 로그인 시도와 SQL 쿼리 생성</h2>
+                            <span id="step-tag" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">기본 실습</span>
+                        </div>
 
-                    <div style="flex: 1;">
-                        <div class="desc-box">
-                            <h4 id="step-subtitle">정상적인 사용자 인증 쿼리의 동작 방식</h4>
-                            <p id="step-desc">사용자가 입력한 아이디와 비밀번호가 데이터베이스 조회(SELECT) 쿼리와 결합되어 판단되는 과정을 확인합니다.</p>
-                            <div id="step-concept" class="concept-note">
-                                💡 일반적인 로그인은 <code>WHERE username = '입력값' AND password_hash = '해시값'</code> 조건이 일치할 때 성립합니다.
+                        <div class="bg-slate-50/80 border border-slate-200/60 rounded-xl p-4 space-y-3 text-xs">
+                            <h3 id="step-subtitle" class="font-bold text-slate-800 text-sm">올바른 사용자 계정으로 로그인하기</h3>
+                            <p id="step-desc" class="text-slate-600 leading-relaxed">정상적인 사용자 아이디와 비밀번호를 입력했을 때 백엔드에서 쿼리가 생성되는 원리를 확인합니다.</p>
+                            <div id="step-concept" class="bg-indigo-50/70 border-l-4 border-indigo-500 rounded-r-xl p-3 text-indigo-900 font-medium leading-relaxed">
+                                💡 정상 로그인은 입력한 아이디와 비밀번호 해시값이 모두 일치할 때 1개의 회원 레코드를 반환합니다.
                             </div>
                         </div>
 
-                        <div id="preset-area" style="margin-bottom: 16px;">
-                            <div class="preset-title">빠른 테스트 입력</div>
-                            <div id="preset-buttons">
-                                <button type="button" class="preset-chip" onclick="setPreset('admin', 'admin123')">🔑 admin 계정 (<code>admin</code> / <code>admin123</code>)</button>
-                            </div>
+                        <!-- Presets Area -->
+                        <div id="preset-area" class="space-y-2">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-400">빠른 테스트 페이로드 (클릭 시 자동 실행)</label>
+                            <div id="preset-buttons" class="flex flex-wrap gap-2"></div>
                         </div>
 
-                        <form id="step-form" onsubmit="handleFormSubmit(event)">
-                            <div class="form-group">
-                                <label class="form-label" for="input-user">아이디 (Username)</label>
-                                <input type="text" id="input-user" class="form-control" placeholder="아이디 입력" required>
+                        <!-- Input Form -->
+                        <form id="step-form" onsubmit="handleFormSubmit(event)" class="space-y-4 pt-2">
+                            <div class="space-y-3">
+                                <div class="space-y-1.5">
+                                    <label for="input-user" class="block text-xs font-bold text-slate-600">사용자 아이디 (Username)</label>
+                                    <input type="text" id="input-user" class="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all" placeholder="admin">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label for="input-pass" class="block text-xs font-bold text-slate-600">비밀번호 (Password)</label>
+                                    <input type="text" id="input-pass" class="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all" placeholder="admin123">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label" for="input-pass">비밀번호 (Password)</label>
-                                <input type="password" id="input-pass" class="form-control" placeholder="비밀번호 입력">
-                            </div>
-                            <button type="submit" class="btn btn-indigo">▶️ 쿼리 실행 및 로그인 테스트</button>
+                            <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-semibold text-xs rounded-xl shadow-sm hover:shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-play text-xs"></i>
+                                <span>실시간 SQL 쿼리 실행 & 인증 테스트</span>
+                            </button>
                         </form>
 
-                        <div id="quiz-area" class="quiz-card" style="display: none;">
-                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-heading); margin-bottom: 8px;">❓ 이해도 점검 퀴즈</div>
-                            <div id="quiz-question" style="font-size: 0.875rem; color: var(--text-body); margin-bottom: 10px;"></div>
-                            <div id="quiz-options"></div>
-                            <div id="quiz-feedback" style="margin-top: 10px; font-size: 0.825rem; display: none;"></div>
+                        <!-- Quiz Section -->
+                        <div id="quiz-area" class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-3" style="display: none;">
+                            <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+                                <i class="fa-solid fa-circle-question text-indigo-500"></i>
+                                <span>SQL Injection 이해도 퀴즈</span>
+                            </div>
+                            <div id="quiz-question" class="text-xs text-slate-700 font-medium"></div>
+                            <div id="quiz-options" class="space-y-2"></div>
+                            <div id="quiz-feedback" class="text-xs font-semibold p-2.5 rounded-lg bg-white border border-slate-200 text-slate-700" style="display: none;"></div>
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 10px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
-                        <button class="btn btn-ghost" id="btn-prev" onclick="prevStep()" disabled>← 이전 단계</button>
-                        <button class="btn btn-indigo" id="btn-next" onclick="nextStep()">다음 단계 →</button>
+                    <!-- Navigation Footer -->
+                    <div class="flex items-center gap-3 pt-6 border-t border-slate-100">
+                        <button id="btn-prev" onclick="prevStep()" disabled class="flex-1 py-2 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 hover:bg-slate-100 font-semibold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            ← 이전 단계
+                        </button>
+                        <button id="btn-next" onclick="nextStep()" class="flex-1 py-2 px-4 rounded-xl bg-indigo-600 text-white font-semibold text-xs hover:bg-indigo-700 shadow-2xs transition-all">
+                            다음 단계 →
+                        </button>
                     </div>
                 </div>
 
-                <!-- Right Panel -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <span class="panel-title">🔍 백엔드 쿼리 및 실행 결과 시각화</span>
-                        <span id="mode-tag" class="tag tag-rose">Vulnerable Mode</span>
+                <!-- Right Panel: Visual SQL Query Output -->
+                <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-code text-slate-400 text-xs"></i>
+                            <h2 class="text-sm font-bold text-slate-900">SQL Visualizer & 백엔드 쿼리 분석</h2>
+                        </div>
+                        <span id="mode-tag" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                            Vulnerable Mode (f-string)
+                        </span>
                     </div>
 
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <div class="editor-container">
-                            <div class="editor-bar">
-                                <span>Executed SQL Query</span>
-                                <span id="status-text">Ready</span>
+                    <!-- SQL Query Display -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs text-slate-500 font-mono">
+                            <span class="font-semibold text-slate-600">Generated SQL Query (백엔드 최종 수행 쿼리)</span>
+                            <span id="status-text" class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">Ready</span>
+                        </div>
+                        <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 font-mono text-xs text-slate-200 shadow-inner overflow-x-auto min-h-[90px] whitespace-pre-wrap break-all" id="query-output">
+-- 왼쪽 입력 폼에 계정 정보를 입력 후 실행을 누르세요.
+-- 백엔드에서 조합된 SQL 쿼리가 문법 하이라이팅되어 표시됩니다.
+                        </div>
+                    </div>
+
+                    <!-- Result Callout -->
+                    <div id="result-callout" class="rounded-xl p-4 text-xs space-y-1 transition-all border hidden">
+                        <div id="result-head" class="font-bold text-sm"></div>
+                        <div id="result-detail" class="text-slate-600 leading-relaxed"></div>
+                    </div>
+
+                    <!-- DB User Table Mock View -->
+                    <div class="space-y-2 pt-2">
+                        <div class="flex items-center justify-between text-xs font-bold text-slate-600">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-table text-slate-400"></i>
+                                <span>DB User Table Sample Data (시뮬레이션 회원 목록)</span>
                             </div>
-                            <div class="editor-body" id="query-output">
--- 왼쪽 입력 폼에서 아이디와 비밀번호를 입력 후 실행 버튼을 누르세요.
--- 백엔드 데이터베이스에서 실행되는 조작된 SQL 문이 이곳에 표시됩니다.
+                            <span class="text-[11px] font-mono text-slate-400 font-normal">security_demo.db</span>
+                        </div>
+                        <div class="border border-slate-200 rounded-xl overflow-hidden text-xs">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-100/70 border-b border-slate-200 text-slate-600 font-bold">
+                                    <tr>
+                                        <th class="p-2.5">ID</th>
+                                        <th class="p-2.5">Username</th>
+                                        <th class="p-2.5">Role</th>
+                                        <th class="p-2.5">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 font-mono text-slate-700 bg-white">
+                                    <tr class="bg-indigo-50/40">
+                                        <td class="p-2.5 font-bold">1</td>
+                                        <td class="p-2.5 font-bold text-indigo-700">admin</td>
+                                        <td class="p-2.5"><span class="px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px]">SuperAdmin</span></td>
+                                        <td class="p-2.5 text-emerald-600 font-sans font-semibold">Active</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5">2</td>
+                                        <td class="p-2.5">user1</td>
+                                        <td class="p-2.5"><span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">User</span></td>
+                                        <td class="p-2.5 text-emerald-600 font-sans font-semibold">Active</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5">3</td>
+                                        <td class="p-2.5">user2</td>
+                                        <td class="p-2.5"><span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">User</span></td>
+                                        <td class="p-2.5 text-emerald-600 font-sans font-semibold">Active</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Code Comparison Tabs -->
+                    <div class="space-y-3 pt-2">
+                        <div class="bg-slate-100 p-1 rounded-xl border border-slate-200/60 flex gap-1">
+                            <button class="tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs" onclick="switchCodeTab('vulnerable')">
+                                ⚠️ 취약한 f-string 쿼리 소스
+                            </button>
+                            <button class="tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800" onclick="switchCodeTab('secure')">
+                                ✅ 안전한 Prepared Statement 소스
+                            </button>
+                        </div>
+                        
+                        <div id="code-vulnerable" class="tab-pane">
+                            <div class="bg-slate-900 rounded-xl p-4 font-mono text-xs text-slate-300 shadow-inner">
+                                <span class="text-rose-400"># ❌ 문자열 더하기/f-string 사용으로 SQLi 취약</span><br>
+                                query = <span class="text-emerald-400">f"SELECT * FROM users WHERE username='{u}' AND password_hash='{p}'"</span><br>
+                                cursor.execute(query)
                             </div>
                         </div>
-
-                        <div id="result-callout" class="result-callout">
-                            <div id="result-head" style="font-weight: 700; margin-bottom: 4px;"></div>
-                            <div id="result-detail"></div>
-                        </div>
-
-                        <div style="margin-top: 24px;">
-                            <div class="tab-bar">
-                                <button class="tab-btn active" onclick="switchCodeTab('vulnerable')">⚠️ 취약한 방식 코드</button>
-                                <button class="tab-btn" onclick="switchCodeTab('secure')">✅ 안전한 Prepared Statement 코드</button>
-                            </div>
-                            <div id="code-vulnerable" class="tab-pane active">
-                                <div class="editor-container">
-                                    <div class="editor-body">
-<span class="kw">def</span> vulnerable_login(username, password):
-    <span class="str"># ❌ 문자열 포맷팅 (f-string) 사용 - SQL Injection 취약!</span>
-    query = <span class="str">f"SELECT * FROM users WHERE username = '{username}' AND password_hash = '{password_hash}'"</span>
-    cursor.execute(query)
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="code-secure" class="tab-pane">
-                                <div class="editor-container">
-                                    <div class="editor-body">
-<span class="kw">def</span> secure_login(username, password):
-    <span class="str"># ✅ Prepared Statement 사용 - 입력값을 단순 '데이터'로 수신</span>
-    query = <span class="str">"SELECT * FROM users WHERE username = ? AND password_hash = ?"</span>
-    cursor.execute(query, (username, password_hash))
-                                    </div>
-                                </div>
+                        
+                        <div id="code-secure" class="tab-pane hidden">
+                            <div class="bg-slate-900 rounded-xl p-4 font-mono text-xs text-slate-300 shadow-inner">
+                                <span class="text-emerald-400"># ✅ 파라미터 바인딩(?) 사용으로 입력값을 단순 데이터 처리</span><br>
+                                query = <span class="text-emerald-400">"SELECT * FROM users WHERE username=? AND password_hash=?"</span><br>
+                                cursor.execute(query, (u, p))
                             </div>
                         </div>
                     </div>
@@ -600,102 +272,121 @@
             </div>
         </div>
 
-        <!-- Sandbox Mode UI -->
-        <div id="sandbox-view" class="sandbox-layout">
-            <div class="panel">
-                <div class="panel-header">
-                    <span class="panel-title">🧪 자유 실습 샌드박스</span>
-                    <span class="tag tag-indigo">Free Testing</span>
+        <!-- SANDBOX VIEW -->
+        <div id="sandbox-view" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <h2 class="text-sm font-bold text-slate-900">🧪 SQL Injection 자유 샌드박스</h2>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">Free Testing</span>
                 </div>
-                <div class="desc-box">
-                    <p>취약한 로그인과 안전한 로그인을 원하는 대로 선택하고 커스텀 페이로드를 마음껏 테스트해보세요.</p>
+                
+                <div class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-600">SQL 처리 방식 선택</label>
+                        <select id="sandbox-mode" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-500">
+                            <option value="vulnerable">⚠️ 취약한 방식 (f-string 문자열 더하기)</option>
+                            <option value="secure">✅ 안전한 방어 (Prepared Statement)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-600">Username Payload</label>
+                            <input type="text" id="sandbox-user" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono outline-none focus:bg-white focus:border-indigo-500" value="admin">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-600">Password Payload</label>
+                            <input type="text" id="sandbox-pass" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono outline-none focus:bg-white focus:border-indigo-500" value="' OR '1'='1">
+                        </div>
+                    </div>
+
+                    <button onclick="runSandbox()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-vial"></i>
+                        <span>샌드박스 SQL 쿼리 테스트</span>
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">로그인 처리 방식 선택</label>
-                    <select id="sandbox-mode" class="form-control" style="font-family: inherit;">
-                        <option value="vulnerable">⚠️ 취약한 로그인 (f-string)</option>
-                        <option value="secure">✅ 안전한 로그인 (Prepared Statement)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">아이디 (Username)</label>
-                    <input type="text" id="sandbox-user" class="form-control" placeholder="아이디 입력">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">비밀번호 (Password)</label>
-                    <input type="password" id="sandbox-pass" class="form-control" placeholder="비밀번호 입력">
-                </div>
-                <button onclick="runSandbox()" class="btn btn-indigo">🧪 샌드박스 실행</button>
             </div>
 
-            <div class="panel">
-                <div class="panel-header">
-                    <span class="panel-title">👤 새 계정 회원가입</span>
+            <!-- Registration Test Sandbox Panel -->
+            <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <h2 class="text-sm font-bold text-slate-900">👤 샘플 회원가입 테스트</h2>
+                    <span class="text-xs text-slate-400">데이터베이스 동적 추가</span>
                 </div>
-                <div class="form-group">
-                    <input type="text" id="reg-user" class="form-control" placeholder="새 아이디 (3자 이상)" style="margin-bottom: 8px;">
-                    <input type="password" id="reg-pass" class="form-control" placeholder="새 비밀번호 (4자 이상)">
+
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-600">새 아이디</label>
+                            <input type="text" id="reg-user" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono outline-none focus:bg-white focus:border-indigo-500" placeholder="newuser">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-600">새 비밀번호</label>
+                            <input type="password" id="reg-pass" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono outline-none focus:bg-white focus:border-indigo-500" placeholder="pass123">
+                        </div>
+                    </div>
+
+                    <button onclick="runRegister()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>회원가입 실행</span>
+                    </button>
+
+                    <div id="reg-out" class="p-3 rounded-xl text-xs font-semibold hidden"></div>
                 </div>
-                <button onclick="runRegister()" class="btn btn-indigo" style="background: var(--brand-emerald);">➕ 새 계정 등록하기</button>
-                <div id="reg-out" class="result-callout" style="margin-top: 12px;"></div>
             </div>
         </div>
     </main>
 
+    <!-- Client Script -->
     <script>
         const stepsData = {
             1: {
-                title: "1. 정상 로그인 메커니즘 이해하기",
-                subtitle: "정상적인 사용자 인증 쿼리의 동작 방식",
-                desc: "서비스에서 입력한 아이디와 비밀번호가 데이터베이스 조회(SELECT) 쿼리와 어떻게 결합되어 판단되는지 관찰합니다.",
-                concept: "💡 일반적인 로그인은 <code>WHERE username = '입력값' AND password_hash = '해시값'</code> 조건이 일치할 때 성립합니다.",
-                tag: "실습",
-                tagClass: "tag-indigo",
+                title: "1. 정상 로그인 시도와 SQL 쿼리 생성",
+                subtitle: "올바른 사용자 계정으로 로그인하기",
+                desc: "정상적인 아이디(<code>admin</code>)와 비밀번호(<code>admin123</code>)를 입력하여 쿼리가 어떻게 조합되는지 관찰합니다.",
+                concept: "💡 정상 로그인은 입력한 아이디와 비밀번호가 일치하여 1개의 사용자 정보가 조회됩니다.",
+                tag: "기본 실습",
+                tagClass: "bg-sky-50 text-sky-700 border-sky-200",
                 presets: [
-                    { label: "🔑 admin 계정", user: "admin", pass: "admin123" }
+                    { label: "👤 admin 로그인", user: "admin", pass: "admin123" }
                 ],
-                target: "vulnerable",
-                check: (res) => res.success
+                target: "vulnerable"
             },
             2: {
-                title: "2. 조건 우회 공격 (' OR '1'='1)",
-                subtitle: "항상 참(TRUE)이 되는 조건문 주입하기",
-                instruction: "아이디 칸에 <code>' OR '1'='1</code>을 입력하면 조건식이 참이 되어 비밀번호 없이도 우회됩니다.",
-                concept: "💥 작은따옴표를 닫아 <code>OR '1'='1</code> 참 조건을 주입하면 전체 조건식이 항상 참이 됩니다.",
+                title: "2. 기본 SQL Injection 공격 (' OR '1'='1)",
+                subtitle: "항상 참(True)이 되는 조건을 주입하여 인가 우회",
+                desc: "비밀번호 입력란에 <code>' OR '1'='1</code>을 주입하여 비밀번호 검증 조건문을 무력화시킵니다.",
+                concept: "💥 <code>OR '1'='1'</code> 조건에 의해 비밀번호가 틀려도 전체 WHERE 조건문이 True가 되어 최고 관리자로 접속됩니다.",
                 tag: "공격 실습",
-                tagClass: "tag-rose",
+                tagClass: "bg-rose-50 text-rose-700 border-rose-200",
                 presets: [
-                    { label: "⚡ ' OR '1'='1 (대표 페이로드)", user: "' OR '1'='1", pass: "anything" },
-                    { label: "⚡ ' OR '1'='1' -- (주석 연동)", user: "' OR '1'='1' --", pass: "anything" }
+                    { label: "⚡ ' OR '1'='1 주입", user: "admin", pass: "' OR '1'='1" }
                 ],
-                target: "vulnerable",
-                check: (res) => res.success && res.is_vulnerable
+                target: "vulnerable"
             },
             3: {
-                title: "3. 주석 우회 공격 (admin' --)",
-                subtitle: "특정 계정 비밀번호 우회하기",
-                desc: "아이디 뒤에 <code>admin' --</code>를 입력하면 비밀번호 검사 구문이 주석 무력화되어 계정이 탈취됩니다.",
-                concept: "💥 <code>admin' --</code>를 주입하면 뒤따라오는 패스워드 검사 구문 전체가 주석 처리되어 생략됩니다.",
+                title: "3. SQL 주석 기법을 활용한 비밀번호 검증 무시 ('--)",
+                subtitle: "주석 처리 문자를 통한 후속 쿼리 무력화",
+                desc: "아이디 입력란 뒤에 <code>admin'--</code>를 입력하면 주석 기호 뒤의 비밀번호 검증 절차가 통째로 무시됩니다.",
+                concept: "💥 <code>--</code> 주석 기호에 의해 비밀번호 검증 쿼리 뒷부분이 실행되지 않고 무시됩니다.",
                 tag: "공격 실습",
-                tagClass: "tag-rose",
+                tagClass: "bg-rose-50 text-rose-700 border-rose-200",
                 presets: [
-                    { label: "⚡ admin' -- 비밀번호 우회", user: "admin' --", pass: "wrongpassword" }
+                    { label: "⚡ admin'-- 주입", user: "admin'--", pass: "anything" }
                 ],
-                target: "vulnerable",
-                check: (res) => res.success && res.is_vulnerable
+                target: "vulnerable"
             },
             4: {
-                title: "4. 방어막 테스트 - Prepared Statement",
-                subtitle: "안전한 로그인 방식을 공격 페이로드로 검증하기",
-                desc: "동일한 공격 페이로드를 Prepared Statement로 구현된 로그인에 시도해봅니다.",
-                concept: "🛡️ Prepared Statement는 입력값 전체를 문법이 아닌 단순 '텍스트 데이터'로 수신하므로 공격이 차단됩니다.",
+                title: "4. Prepared Statement (시큐어 코딩 방어)",
+                subtitle: "파라미터 바인딩을 적용하여 공격 차단하기",
+                desc: "동일한 공격 페이로드를 안전한 Prepared Statement 모드로 전송하여 공격이 무력화되는 과정을 관찰합니다.",
+                concept: "🛡️ Prepared Statement는 주입된 특수문자를 SQL 명령어 문법이 아닌 단순 문자열 데이터로 취급합니다.",
                 tag: "방어 검증",
-                tagClass: "tag-emerald",
+                tagClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
                 presets: [
-                    { label: "🛡️ 안전한 방어 시도", user: "' OR '1'='1", pass: "anything" }
+                    { label: "🛡️ 공격 시도 (Prepared Stmt)", user: "admin", pass: "' OR '1'='1" }
                 ],
-                target: "secure",
-                check: (res) => !res.success
+                target: "secure"
             },
             5: {
                 title: "5. 시큐어 코딩 소스코드 비교 분석",
@@ -703,7 +394,7 @@
                 desc: "우측 소스코드 비교 탭을 열어 차이점을 비교하고, 아래 이해도 퀴즈를 풀어보세요.",
                 concept: "📝 f-string 사용을 엄금하고 항상 <code>?</code> (파라미터 바인딩)을 사용해야 합니다.",
                 tag: "코드 분석",
-                tagClass: "tag-indigo",
+                tagClass: "bg-indigo-50 text-indigo-700 border-indigo-200",
                 hideForm: true,
                 target: "vulnerable",
                 quiz: {
@@ -721,7 +412,7 @@
                 desc: "모든 실습을 완수하셨습니다! 아래 종합 검증 퀴즈를 풀고 수료를 마무리하세요.",
                 concept: "🎉 축하합니다! Prepared Statement 시큐어 코딩 메커니즘을 습득하셨습니다.",
                 tag: "최종 수료",
-                tagClass: "tag-emerald",
+                tagClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
                 hideForm: true,
                 target: "secure",
                 quiz: {
@@ -739,17 +430,23 @@
         let completed = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
 
         function switchMode(m) {
-            document.getElementById('btn-mode-tutorial').classList.toggle('active', m === 'tutorial');
-            document.getElementById('btn-mode-sandbox').classList.toggle('active', m === 'sandbox');
-            document.getElementById('tutorial-view').style.display = m === 'tutorial' ? 'block' : 'none';
-            document.getElementById('sandbox-view').style.display = m === 'sandbox' ? 'grid' : 'none';
+            const btnTut = document.getElementById('btn-mode-tutorial');
+            const btnSand = document.getElementById('btn-mode-sandbox');
+            
+            if (m === 'tutorial') {
+                btnTut.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs';
+                btnSand.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800';
+                document.getElementById('tutorial-view').classList.remove('hidden');
+                document.getElementById('sandbox-view').classList.add('hidden');
+            } else {
+                btnSand.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs';
+                btnTut.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800';
+                document.getElementById('sandbox-view').classList.remove('hidden');
+                document.getElementById('tutorial-view').classList.add('hidden');
+            }
         }
 
         function jumpStep(n) {
-            if (n > currStep && !completed[currStep] && currStep < 5) {
-                if (!confirm(`⚠️ 현 단계(Step ${currStep}) 실습을 마치지 않으셨습니다. 다음 단계로 건너뛰시겠습니까?`)) return;
-            }
-
             currStep = n;
             const data = stepsData[n];
 
@@ -759,7 +456,16 @@
             document.getElementById('step-badge').textContent = `Step ${n} / 6`;
 
             for (let i = 1; i <= 6; i++) {
-                document.getElementById(`pill-${i}`).classList.toggle('active', i === n);
+                const pill = document.getElementById(`pill-${i}`);
+                if (pill) {
+                    if (i === n) {
+                        pill.className = 'px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-indigo-700 border-indigo-500 bg-indigo-50/70 shadow-2xs whitespace-nowrap';
+                    } else if (completed[i]) {
+                        pill.className = 'px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-emerald-700 border-emerald-300 bg-emerald-50/60 whitespace-nowrap';
+                    } else {
+                        pill.className = 'px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap';
+                    }
+                }
             }
 
             document.getElementById('step-title').textContent = data.title;
@@ -769,15 +475,15 @@
 
             const tag = document.getElementById('step-tag');
             tag.textContent = data.tag;
-            tag.className = `tag ${data.tagClass}`;
+            tag.className = `px-2.5 py-1 rounded-md text-xs font-semibold border ${data.tagClass}`;
 
             const presetArea = document.getElementById('preset-area');
             const presetBtns = document.getElementById('preset-buttons');
             if (data.presets && data.presets.length > 0) {
                 presetArea.style.display = 'block';
                 let html = '';
-                data.presets.forEach(p => {
-                    html += `<button type="button" class="preset-chip" onclick="setPreset('${p.user}', '${p.pass}')">${p.label}</button>`;
+                data.presets.forEach((p, idx) => {
+                    html += `<button type="button" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/40 text-xs font-medium text-slate-700 shadow-2xs transition-all cursor-pointer" onclick="applyPreset(${idx})">${p.label}</button>`;
                 });
                 presetBtns.innerHTML = html;
             } else {
@@ -794,7 +500,7 @@
                 document.getElementById('quiz-question').textContent = data.quiz.q;
                 let html = '';
                 data.quiz.opts.forEach((o, idx) => {
-                    html += `<div class="quiz-opt" onclick="checkQuiz(${idx}, ${o.correct})">${o.text}</div>`;
+                    html += `<div class="quiz-opt p-3 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50/40 hover:border-indigo-300 text-xs text-slate-700 font-medium cursor-pointer transition-all" onclick="checkQuiz(${idx}, ${o.correct})">${o.text}</div>`;
                 });
                 document.getElementById('quiz-options').innerHTML = html;
                 document.getElementById('quiz-feedback').style.display = 'none';
@@ -805,11 +511,11 @@
             const modeTag = document.getElementById('mode-tag');
             if (data.target === 'secure') {
                 modeTag.textContent = 'Secure Mode (Prepared Statement)';
-                modeTag.className = 'tag tag-emerald';
+                modeTag.className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200';
                 switchCodeTab('secure');
             } else {
                 modeTag.textContent = 'Vulnerable Mode (f-string)';
-                modeTag.className = 'tag tag-rose';
+                modeTag.className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200';
                 switchCodeTab('vulnerable');
             }
 
@@ -817,20 +523,42 @@
             document.getElementById('btn-next').textContent = (n === 6) ? '🎓 완수' : '다음 단계 →';
         }
 
-        function setPreset(u, p) {
-            document.getElementById('input-user').value = u;
-            document.getElementById('input-pass').value = p;
+        function applyPreset(idx) {
+            const data = stepsData[currStep];
+            if (data && data.presets && data.presets[idx]) {
+                document.getElementById('input-user').value = data.presets[idx].user;
+                document.getElementById('input-pass').value = data.presets[idx].pass;
+                triggerFormSubmit();
+            }
+        }
+
+        function triggerFormSubmit() {
+            const form = document.getElementById('step-form');
+            if (form) {
+                if (typeof form.requestSubmit === 'function') {
+                    form.requestSubmit();
+                } else {
+                    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                }
+            }
         }
 
         async function handleFormSubmit(e) {
-            e.preventDefault();
-            const u = document.getElementById('input-user').value.trim();
-            const p = document.getElementById('input-pass').value;
+            if (e && e.preventDefault) e.preventDefault();
+            let u = document.getElementById('input-user').value.trim();
+            let p = document.getElementById('input-pass').value;
             const data = stepsData[currStep];
 
             if (!u) {
-                alert('아이디를 입력해주세요!');
-                return;
+                if (data && data.presets && data.presets[0]) {
+                    u = data.presets[0].user;
+                    p = data.presets[0].pass;
+                    document.getElementById('input-user').value = u;
+                    document.getElementById('input-pass').value = p;
+                } else {
+                    u = "admin";
+                    document.getElementById('input-user').value = u;
+                }
             }
 
             const ep = (data.target === 'secure') ? '/api/secure-login' : '/api/vulnerable-login';
@@ -848,7 +576,6 @@
                 completed[currStep] = true;
                 const pill = document.getElementById(`pill-${currStep}`);
                 if (pill && !pill.textContent.includes('✓')) {
-                    pill.classList.add('completed');
                     pill.textContent = '✓ ' + pill.textContent;
                 }
             } catch (err) {
@@ -865,27 +592,27 @@
             const detail = document.getElementById('result-detail');
 
             let q = res.query || '-- 쿼리가 없습니다.';
-            q = q.replace(/(SELECT|FROM|WHERE|AND|OR)/g, '<span class="kw">$1</span>').replace(/('.*?')/g, '<span class="str">$1</span>');
+            q = q.replace(/(SELECT|FROM|WHERE|AND|OR)/g, '<span class="text-rose-400 font-bold">$1</span>').replace(/('.*?')/g, '<span class="text-emerald-400">$1</span>');
             out.innerHTML = q;
 
-            callout.className = 'result-callout show';
+            callout.classList.remove('hidden');
             if (res.success) {
                 if (res.is_vulnerable && (currStep === 2 || currStep === 3)) {
-                    callout.className = 'result-callout show alert-danger';
-                    head.innerHTML = '🚨 [취약점 발생! 시스템 뚫림] ' + res.message;
-                    detail.innerHTML = '💥 비밀번호 없이 계정에 로그인되었습니다! 사용자가 주입한 페이로드가 SQL 문법으로 해석되었습니다.';
+                    callout.className = 'rounded-xl p-4 text-xs space-y-1 transition-all border bg-rose-50/90 border-rose-200 text-rose-900';
+                    head.innerHTML = '🚨 [취약점 발생! 인가 무력화] ' + res.message;
+                    detail.innerHTML = '💥 비밀번호 검증이 우회되어 최고 관리자 계정으로 무단 로그인되었습니다!';
                 } else {
-                    callout.className = 'result-callout show alert-success';
+                    callout.className = 'rounded-xl p-4 text-xs space-y-1 transition-all border bg-indigo-50/90 border-indigo-200 text-indigo-900';
                     head.innerHTML = '✅ [로그인 성공] ' + res.message;
-                    detail.innerHTML = '정상적인 인증 정보를 통과했습니다.';
+                    detail.innerHTML = '정상적인 인증 정보를 통과하였습니다.';
                 }
             } else {
                 if (target === 'secure' && currStep === 4) {
-                    callout.className = 'result-callout show alert-success';
+                    callout.className = 'rounded-xl p-4 text-xs space-y-1 transition-all border bg-emerald-50/90 border-emerald-200 text-emerald-900';
                     head.innerHTML = '🛡️ [보안 방어 성공! 차단됨] 로그인 실패';
-                    detail.innerHTML = '✨ Prepared Statement가 입력값 전체를 단순 텍스트로 처리하여 쿼리 조작을 차단했습니다!';
+                    detail.innerHTML = '✨ Prepared Statement가 입력값 전체를 단순 텍스트로 처리하여 쿼리 조작을 완전히 차단했습니다!';
                 } else {
-                    callout.className = 'result-callout show alert-muted';
+                    callout.className = 'rounded-xl p-4 text-xs space-y-1 transition-all border bg-slate-100 border-slate-200 text-slate-700';
                     head.innerHTML = '❌ [로그인 실패] ' + res.message;
                     detail.innerHTML = '아이디 또는 비밀번호가 일치하지 않습니다.';
                 }
@@ -894,32 +621,42 @@
 
         function switchCodeTab(t) {
             const btns = document.querySelectorAll('.tab-btn');
-            btns[0].classList.toggle('active', t === 'vulnerable');
-            btns[1].classList.toggle('active', t === 'secure');
+            const codeVuln = document.getElementById('code-vulnerable');
+            const codeSec = document.getElementById('code-secure');
 
-            document.getElementById('code-vulnerable').classList.toggle('active', t === 'vulnerable');
-            document.getElementById('code-secure').classList.toggle('active', t === 'secure');
+            if (t === 'vulnerable') {
+                btns[0].className = 'tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs';
+                btns[1].className = 'tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800';
+                codeVuln.classList.remove('hidden');
+                codeSec.classList.add('hidden');
+            } else {
+                btns[1].className = 'tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs';
+                btns[0].className = 'tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800';
+                codeSec.classList.remove('hidden');
+                codeVuln.classList.add('hidden');
+            }
         }
 
         function checkQuiz(idx, correct) {
-            const opts = document.querySelectorAll('.quiz-opt');
-            opts.forEach(o => o.classList.remove('correct', 'wrong'));
+            const opts = document.querySelectorAll('#quiz-options .quiz-opt');
+            opts.forEach(o => {
+                o.className = 'quiz-opt p-3 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50/40 hover:border-indigo-300 text-xs text-slate-700 font-medium cursor-pointer transition-all';
+            });
             const fb = document.getElementById('quiz-feedback');
             fb.style.display = 'block';
 
             if (correct) {
-                opts[idx].classList.add('correct');
-                fb.style.color = '#166534';
+                opts[idx].className = 'quiz-opt p-3 rounded-xl border border-emerald-300 bg-emerald-50/80 text-xs text-emerald-900 font-semibold cursor-pointer transition-all';
+                fb.className = 'text-xs font-semibold p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800';
                 fb.innerHTML = '✨ 정답입니다! Prepared Statement는 파라미터를 단순 데이터로 수신하므로 SQL Injection을 근본 차단합니다.';
                 completed[currStep] = true;
                 const pill = document.getElementById(`pill-${currStep}`);
                 if (pill && !pill.textContent.includes('✓')) {
-                    pill.classList.add('completed');
                     pill.textContent = '✓ ' + pill.textContent;
                 }
             } else {
-                opts[idx].classList.add('wrong');
-                fb.style.color = '#991b1b';
+                opts[idx].className = 'quiz-opt p-3 rounded-xl border border-rose-300 bg-rose-50/80 text-xs text-rose-900 font-semibold cursor-pointer transition-all';
+                fb.className = 'text-xs font-semibold p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800';
                 fb.innerHTML = '❌ 다시 생각해보세요. 준비된 쿼리의 핵심은 코드와 데이터의 분리입니다.';
             }
         }
@@ -940,19 +677,25 @@
             const ep = (mode === 'secure') ? '/api/secure-login' : '/api/vulnerable-login';
             const res = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
             const data = await res.json();
-            alert(`결과: ${data.message}\n쿼리: ${data.query}`);
+            alert(`결과: ${data.message}\n생성된 SQL: ${data.query}`);
         }
 
         async function runRegister() {
             const u = document.getElementById('reg-user').value.trim();
             const p = document.getElementById('reg-pass').value.trim();
             const out = document.getElementById('reg-out');
+            if (!u || !p) {
+                alert('아이디와 비밀번호를 모두 입력하세요.');
+                return;
+            }
             const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
             const data = await res.json();
-            out.className = `result-callout show ${data.success ? 'alert-success' : 'alert-danger'}`;
+            out.classList.remove('hidden');
+            out.className = `p-3 rounded-xl text-xs font-semibold border ${data.success ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'}`;
             out.textContent = data.message;
         }
 
+        // Initialize Step 1
         jumpStep(1);
     </script>
 </body>

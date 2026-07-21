@@ -8,581 +8,216 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-canvas: #f8fafc;
-            --bg-surface: #ffffff;
-            --bg-surface-hover: #f1f5f9;
-            --border-subtle: #e2e8f0;
-            --border-medium: #cbd5e1;
-            
-            --brand-primary: #059669;
-            --brand-primary-hover: #047857;
-            --brand-emerald: #059669;
-            --brand-rose: #e11d48;
-            
-            --text-heading: #0f172a;
-            --text-body: #334155;
-            --text-muted: #64748b;
-            --text-dim: #94a3b8;
-            
-            --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+    <!-- FontAwesome Icon CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background-color: var(--bg-canvas);
-            color: var(--text-body);
-            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-            min-height: 100vh;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            max-width: 1240px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        /* Navbar */
-        header {
-            border-bottom: 1px solid var(--border-subtle);
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .nav-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 64px;
-        }
-
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 6px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .back-link:hover {
-            background: var(--bg-surface-hover);
-            color: var(--text-heading);
-        }
-
-        .page-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-heading);
-        }
-
-        .mode-toggle {
-            display: flex;
-            background: rgba(15, 23, 42, 0.04);
-            padding: 3px;
-            border-radius: 8px;
-            border: 1px solid var(--border-subtle);
-        }
-
-        .mode-btn {
-            padding: 6px 14px;
-            border-radius: 6px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .mode-btn.active {
-            background: var(--bg-surface);
-            color: var(--brand-primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        /* Progress Bar Card */
-        .timeline-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin: 24px 0;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .timeline-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-        }
-
-        .progress-bar-bg {
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 999px;
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            width: 20%;
-            background: var(--brand-primary);
-            border-radius: 999px;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .step-timeline {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-        }
-
-        .step-item {
-            flex: 1;
-            min-width: 140px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            background: var(--bg-canvas);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        .step-item.active {
-            background: rgba(5, 150, 105, 0.08);
-            border-color: var(--brand-primary);
-            color: var(--brand-primary);
-            font-weight: 700;
-        }
-
-        .step-item.completed {
-            border-color: rgba(5, 150, 105, 0.3);
-            color: var(--brand-emerald);
-        }
-
-        /* Workspace Grid */
-        .workspace {
-            display: grid;
-            grid-template-columns: 1fr 1.15fr;
-            gap: 20px;
-            margin-bottom: 60px;
-        }
-
-        @media (max-width: 992px) { .workspace { grid-template-columns: 1fr; } }
-
-        .panel {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-subtle);
-            margin-bottom: 20px;
-        }
-
-        .panel-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-heading);
-        }
-
-        .tag {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .tag-emerald { background: rgba(5, 150, 105, 0.08); color: var(--brand-primary); border: 1px solid rgba(5, 150, 105, 0.2); }
-        .tag-rose { background: rgba(225, 29, 72, 0.08); color: var(--brand-rose); border: 1px solid rgba(225, 29, 72, 0.2); }
-
-        .desc-box {
-            background: var(--bg-canvas);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-
-        .desc-box h4 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--text-heading);
-            margin-bottom: 6px;
-        }
-
-        .desc-box p {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-
-        .concept-note {
-            background: rgba(5, 150, 105, 0.05);
-            border-left: 3px solid var(--brand-primary);
-            padding: 8px 12px;
-            font-size: 0.825rem;
-            color: var(--text-body);
-            border-radius: 0 6px 6px 0;
-        }
-
-        .preset-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
-        }
-
-        .preset-chip {
-            background: var(--bg-canvas);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-body);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.825rem;
-            cursor: pointer;
-            margin-right: 6px;
-            margin-bottom: 6px;
-        }
-
-        .preset-chip:hover {
-            background: var(--bg-surface-hover);
-            border-color: var(--brand-primary);
-        }
-
-        .preset-chip code {
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--brand-primary);
-        }
-
-        .form-group { margin-bottom: 16px; }
-        
-        .form-label {
-            display: block;
-            font-size: 0.825rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 14px;
-            background: #ffffff;
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            color: var(--text-heading);
-            font-size: 0.9rem;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--brand-primary);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 10px 18px;
-            border-radius: 8px;
-            border: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-emerald { background: var(--brand-primary); color: white; }
-        .btn-emerald:hover { background: var(--brand-primary-hover); }
-        .btn-ghost { background: var(--bg-canvas); border: 1px solid var(--border-subtle); color: var(--text-body); }
-        .btn-ghost:hover { background: var(--bg-surface-hover); }
-
-        /* Inspector & Code Display */
-        .editor-container {
-            background: #0f172a;
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            overflow: hidden;
-        }
-
-        .editor-bar {
-            background: #1e293b;
-            padding: 8px 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-        }
-
-        .editor-body {
-            padding: 14px;
-            color: #e2e8f0;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        .editor-body .kw { color: #f43f5e; font-weight: 600; }
-        .editor-body .str { color: #34d399; }
-
-        .result-callout {
-            padding: 14px 16px;
-            border-radius: 8px;
-            margin-top: 16px;
-            font-size: 0.875rem;
-            display: none;
-        }
-
-        .result-callout.show { display: block; }
-        .result-callout.alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-        .result-callout.alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
-        .result-callout.alert-muted { background: var(--bg-canvas); border: 1px solid var(--border-subtle); color: var(--text-muted); }
-
-        .tab-bar {
-            display: flex;
-            gap: 4px;
-            background: var(--bg-canvas);
-            padding: 3px;
-            border-radius: 8px;
-            border: 1px solid var(--border-subtle);
-            margin-bottom: 10px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 6px 12px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 6px;
-        }
-
-        .tab-btn.active {
-            background: var(--bg-surface);
-            color: var(--brand-primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
-
-        .quiz-card {
-            background: var(--bg-canvas);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .quiz-opt {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin-top: 8px;
-            font-size: 0.875rem;
-            cursor: pointer;
-        }
-
-        .quiz-opt:hover {
-            border-color: var(--brand-primary);
-            background: rgba(5, 150, 105, 0.04);
-        }
-
-        .quiz-opt.correct { background: #f0fdf4; border-color: #86efac; color: #166534; }
-        .quiz-opt.wrong { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
-
-        .sandbox-layout { display: none; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 992px) { .sandbox-layout { grid-template-columns: 1fr; } }
-    </style>
+    </script>
 </head>
-<body>
-    <!-- Navbar -->
-    <header>
-        <div class="container">
-            <div class="nav-inner">
-                <div class="nav-left">
-                    <a href="/" class="back-link">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+<body class="bg-slate-50/60 text-slate-700 font-sans min-h-screen antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Left Nav -->
+                <div class="flex items-center gap-4">
+                    <a href="/" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-600 hover:text-slate-900 text-xs font-semibold transition-all">
+                        <i class="fa-solid fa-arrow-left text-slate-500"></i>
                         <span>포털 허브</span>
                     </a>
-                    <div class="page-title-wrap">
-                        <span class="page-title">인증/인가 & IDOR 방어 스튜디오</span>
+                    <div class="h-4 w-px bg-slate-200"></div>
+                    <div class="flex items-center gap-2">
+                        <span class="flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                        <h1 class="text-sm font-bold text-slate-900 tracking-tight">인증/인가 & IDOR 방어 스튜디오</h1>
                     </div>
                 </div>
-                <div class="mode-toggle">
-                    <button class="mode-btn active" id="btn-mode-tutorial" onclick="switchMode('tutorial')">🎓 단계별 튜토리얼</button>
-                    <button class="mode-btn" id="btn-mode-sandbox" onclick="switchMode('sandbox')">🧪 자유 샌드박스</button>
+
+                <!-- Right Mode Switcher -->
+                <div class="bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 flex items-center gap-1">
+                    <button id="btn-mode-tutorial" onclick="switchMode('tutorial')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs">
+                        <i class="fa-solid fa-graduation-cap mr-1.5"></i>단계별 튜토리얼
+                    </button>
+                    <button id="btn-mode-sandbox" onclick="switchMode('sandbox')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800">
+                        <i class="fa-solid fa-flask mr-1.5"></i>자유 샌드박스
+                    </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="container">
-        <!-- Tutorial Mode UI -->
-        <div id="tutorial-view">
-            <!-- Progress Card -->
-            <div class="timeline-card">
-                <div class="timeline-header">
-                    <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-muted);">
-                        진행률 <span id="progress-percent" style="color: var(--text-heading); font-family: 'JetBrains Mono', monospace;">20.0%</span>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        
+        <!-- TUTORIAL VIEW -->
+        <div id="tutorial-view" class="space-y-6">
+            
+            <!-- Timeline & Progress Card -->
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm space-y-4">
+                <div class="flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-slate-500">실습 진행률</span>
+                        <span id="progress-percent" class="font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md">20.0%</span>
+                    </div>
+                    <span id="step-badge" class="px-2.5 py-1 rounded-lg font-mono font-semibold text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        Step 1 / 5
                     </span>
-                    <span id="step-badge" class="tag tag-emerald">Step 1 / 5</span>
                 </div>
-                <div class="progress-bar-bg">
-                    <div id="progress-fill" class="progress-bar-fill"></div>
+
+                <!-- Progress Fill -->
+                <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div id="progress-fill" class="h-full bg-emerald-500 rounded-full transition-all duration-300 w-1/5"></div>
                 </div>
-                <div class="step-timeline">
-                    <button id="pill-1" class="step-item active" onclick="jumpStep(1)">1. 내 프로필 조회</button>
-                    <button id="pill-2" class="step-item" onclick="jumpStep(2)">2. IDOR 변조 조작</button>
-                    <button id="pill-3" class="step-item" onclick="jumpStep(3)">3. 세션 인가 검증</button>
-                    <button id="pill-4" class="step-item" onclick="jumpStep(4)">4. RBAC 권한 제어</button>
-                    <button id="pill-5" class="step-item" onclick="jumpStep(5)">5. 코드 & 퀴즈</button>
+
+                <!-- Step Tabs -->
+                <div class="flex gap-2 overflow-x-auto pb-1">
+                    <button id="pill-1" onclick="jumpStep(1)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-emerald-700 border-emerald-500 bg-emerald-50/70 shadow-2xs whitespace-nowrap">
+                        1. 본인 정보 조회
+                    </button>
+                    <button id="pill-2" onclick="jumpStep(2)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap">
+                        2. IDOR 무단열람
+                    </button>
+                    <button id="pill-3" onclick="jumpStep(3)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap">
+                        3. 세션 인가 방어
+                    </button>
+                    <button id="pill-4" onclick="jumpStep(4)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap">
+                        4. RBAC 권한 검증
+                    </button>
+                    <button id="pill-5" onclick="jumpStep(5)" class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap">
+                        5. 코드 & 퀴즈
+                    </button>
                 </div>
             </div>
 
-            <!-- Workspace -->
-            <div class="workspace">
+            <!-- Main Workspace Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
                 <!-- Left Panel -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <span id="step-title" class="panel-title">1. 본인 회원 정보 조회 (user_id=1)</span>
-                        <span id="step-tag" class="tag tag-emerald">실습</span>
-                    </div>
+                <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-6 flex flex-col justify-between">
+                    <div class="space-y-5">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <h2 id="step-title" class="text-base font-bold text-slate-900">1. 본인 프로필 정보 정상 조회</h2>
+                            <span id="step-tag" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">기본 실습</span>
+                        </div>
 
-                    <div style="flex: 1;">
-                        <div class="desc-box">
-                            <h4 id="step-subtitle">정상적인 마이페이지 프로필 접근 구조</h4>
-                            <p id="step-desc">로그인된 사용자가 본인 식별자(user_id=1)로 마이페이지 프로필 정보를 조회합니다.</p>
-                            <div id="step-concept" class="concept-note">
-                                💡 올바른 접근 제어는 현재 로그인 세션 정보와 요청하는 대상 자원의 소유권을 항상 상호 검증해야 합니다.
+                        <div class="bg-slate-50/80 border border-slate-200/60 rounded-xl p-4 space-y-3 text-xs">
+                            <h3 id="step-subtitle" class="font-bold text-slate-800 text-sm">인증된 사용자 본인의 개인정보 조회</h3>
+                            <p id="step-desc" class="text-slate-600 leading-relaxed">현재 로그인되어 있는 본인 계정(<code>user_id=1</code>, admin)의 상세 프로필을 API를 통해 조회합니다.</p>
+                            <div id="step-concept" class="bg-indigo-50/70 border-l-4 border-indigo-500 rounded-r-xl p-3 text-indigo-900 font-medium leading-relaxed">
+                                💡 웹 애플리케이션은 사용자의 로그인 세션 정보에 맞춰 적절한 개인 데이터 조회를 허용해야 합니다.
                             </div>
                         </div>
 
-                        <div id="preset-area" style="margin-bottom: 16px;">
-                            <div class="preset-title">빠른 테스트 입력</div>
-                            <div id="preset-buttons">
-                                <button type="button" class="preset-chip" onclick="setPreset(1)">👤 본인 프로필 (user_id=1)</button>
-                            </div>
+                        <!-- Presets Area -->
+                        <div id="preset-area" class="space-y-2">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-400">빠른 테스트 입력 프리셋 (클릭 시 자동 실행)</label>
+                            <div id="preset-buttons" class="flex flex-wrap gap-2"></div>
                         </div>
 
-                        <form id="step-form" onsubmit="handleFormSubmit(event)">
-                            <div class="form-group">
-                                <label class="form-label" for="input-userid">조회할 회원 번호 (Target user_id)</label>
-                                <input type="number" id="input-userid" class="form-control" placeholder="user_id 입력" required>
+                        <!-- Input Form -->
+                        <form id="step-form" onsubmit="handleFormSubmit(event)" class="space-y-4 pt-2">
+                            <div class="space-y-1.5">
+                                <label for="input-userid" class="block text-xs font-bold text-slate-600">조회할 사용자 식별자 (user_id)</label>
+                                <input type="number" id="input-userid" class="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all" placeholder="1">
                             </div>
-                            <button type="submit" class="btn btn-emerald">▶️ 실제 백엔드 프로필 API 호출</button>
+                            <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-semibold text-xs rounded-xl shadow-sm hover:shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-user-check text-xs"></i>
+                                <span>프로필 API 조회 실행 (GET /api/profile/:id)</span>
+                            </button>
                         </form>
 
-                        <div id="quiz-area" class="quiz-card" style="display: none;">
-                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-heading); margin-bottom: 8px;">❓ IDOR 이해도 점검 퀴즈</div>
-                            <div id="quiz-question" style="font-size: 0.875rem; color: var(--text-body); margin-bottom: 10px;"></div>
-                            <div id="quiz-options"></div>
-                            <div id="quiz-feedback" style="margin-top: 10px; font-size: 0.825rem; display: none;"></div>
+                        <!-- Quiz Section -->
+                        <div id="quiz-area" class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-3" style="display: none;">
+                            <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+                                <i class="fa-solid fa-circle-question text-indigo-500"></i>
+                                <span>IDOR 이해도 점검 퀴즈</span>
+                            </div>
+                            <div id="quiz-question" class="text-xs text-slate-700 font-medium"></div>
+                            <div id="quiz-options" class="space-y-2"></div>
+                            <div id="quiz-feedback" class="text-xs font-semibold p-2.5 rounded-lg bg-white border border-slate-200 text-slate-700" style="display: none;"></div>
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 10px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
-                        <button class="btn btn-ghost" id="btn-prev" onclick="prevStep()" disabled>← 이전 단계</button>
-                        <button class="btn btn-emerald" id="btn-next" onclick="nextStep()">다음 단계 →</button>
+                    <!-- Navigation Footer -->
+                    <div class="flex items-center gap-3 pt-6 border-t border-slate-100">
+                        <button id="btn-prev" onclick="prevStep()" disabled class="flex-1 py-2 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 hover:bg-slate-100 font-semibold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            ← 이전 단계
+                        </button>
+                        <button id="btn-next" onclick="nextStep()" class="flex-1 py-2 px-4 rounded-xl bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 shadow-2xs transition-all">
+                            다음 단계 →
+                        </button>
                     </div>
                 </div>
 
-                <!-- Right Panel -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <span class="panel-title">📊 API 응답 JSON & 세션 권한 시각화</span>
-                        <span id="mode-tag" class="tag tag-rose">Vulnerable Mode</span>
+                <!-- Right Panel: Profile Visualizer -->
+                <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-id-card text-slate-400 text-xs"></i>
+                            <h2 class="text-sm font-bold text-slate-900">프로필 데이터 & 백엔드 인가 분석</h2>
+                        </div>
+                        <span id="mode-tag" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                            Vulnerable Mode (Direct Parameter)
+                        </span>
                     </div>
 
-                    <div style="flex: 1; display: flex; flex-direction: column;">
-                        <div class="editor-container">
-                            <div class="editor-bar">
-                                <span>Backend Profile API Response (JSON)</span>
-                                <span id="status-text">Ready</span>
-                            </div>
-                            <div class="editor-body" id="json-output">
--- 왼쪽에서 회원 번호를 입력 후 API 호출 버튼을 누르세요.
--- 데이터베이스에서 반환된 회원 개인정보 결과가 이 패널에 시각화됩니다.
+                    <!-- Profile Response Output -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs text-slate-500 font-mono">
+                            <span class="font-semibold text-slate-600">JSON Profile Response Body</span>
+                            <span id="status-text" class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">Ready</span>
+                        </div>
+                        <div class="bg-slate-900 rounded-xl border border-slate-800 p-4 font-mono text-xs text-emerald-400 shadow-inner overflow-x-auto min-h-[110px] whitespace-pre-wrap break-all" id="profile-output">
+-- 왼쪽에서 user_id 식별자를 선택 후 프로필 조회를 실행하세요.
+                        </div>
+                    </div>
+
+                    <!-- Result Callout -->
+                    <div id="result-callout" class="rounded-xl p-4 text-xs space-y-1 transition-all border hidden">
+                        <div id="result-head" class="font-bold text-sm"></div>
+                        <div id="result-detail" class="text-slate-600 leading-relaxed"></div>
+                    </div>
+
+                    <!-- Code Comparison Tabs -->
+                    <div class="space-y-3 pt-2">
+                        <div class="bg-slate-100 p-1 rounded-xl border border-slate-200/60 flex gap-1">
+                            <button class="tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs" onclick="switchCodeTab('vulnerable')">
+                                ⚠️ 취약한 인가 코드 (URL 파라미터 신뢰)
+                            </button>
+                            <button class="tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800" onclick="switchCodeTab('secure')">
+                                ✅ 안전한 인가 코드 (서버 세션 대조)
+                            </button>
+                        </div>
+                        
+                        <div id="code-vulnerable" class="tab-pane">
+                            <div class="bg-slate-900 rounded-xl p-4 font-mono text-xs text-slate-300 shadow-inner">
+                                <span class="text-rose-400">@app.route('/api/vulnerable-profile/&lt;user_id&gt;')</span><br>
+                                <span class="text-blue-400">def</span> <span class="text-amber-300">vulnerable_profile</span>(user_id):<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500"># ❌ 세션 확인 없이 사용자가 넘긴 user_id 데이터 그대로 조회</span><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;profile = db.get_user(user_id)<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-emerald-400">return</span> jsonify(profile)
                             </div>
                         </div>
-
-                        <div id="result-callout" class="result-callout">
-                            <div id="result-head" style="font-weight: 700; margin-bottom: 4px;"></div>
-                            <div id="result-detail"></div>
-                        </div>
-
-                        <div style="margin-top: 24px;">
-                            <div class="tab-bar">
-                                <button class="tab-btn active" onclick="switchCodeTab('vulnerable')">⚠️ 취약한 인가 코드</button>
-                                <button class="tab-btn" onclick="switchCodeTab('secure')">✅ 세션 검증 시큐어 코딩 코드</button>
-                            </div>
-                            <div id="code-vulnerable" class="tab-pane active">
-                                <div class="editor-container">
-                                    <div class="editor-body">
-<span class="kw">@app.route('/api/vulnerable-profile/&lt;user_id&gt;')</span>
-<span class="kw">def</span> get_profile(user_id):
-    <span class="str"># ❌ 요청받은 user_id와 로그인 세션을 검증하지 않고 바로 조회!</span>
-    return db.find_by_id(user_id)
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="code-secure" class="tab-pane">
-                                <div class="editor-container">
-                                    <div class="editor-body">
-<span class="kw">@app.route('/api/secure-profile/&lt;user_id&gt;')</span>
-<span class="kw">def</span> get_profile(user_id):
-    <span class="str"># ✅ 로그인 세션 ID와 요청 ID를 엄격히 인가 비교!</span>
-    if user_id != session['current_user_id']:
-        return jsonify({'error': '403 Forbidden'}), 403
-    return db.find_by_id(user_id)
-                                    </div>
-                                </div>
+                        
+                        <div id="code-secure" class="tab-pane hidden">
+                            <div class="bg-slate-900 rounded-xl p-4 font-mono text-xs text-slate-300 shadow-inner">
+                                <span class="text-emerald-400">@app.route('/api/secure-profile/&lt;user_id&gt;')</span><br>
+                                <span class="text-blue-400">def</span> <span class="text-amber-300">secure_profile</span>(user_id):<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;current_session_user = session.get(<span class="text-emerald-400">'user_id'</span>)<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">if</span> str(current_session_user) != str(user_id):<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-slate-500"># ✅ 로그인된 세션과 요청한 user_id가 다르면 403 차단</span><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-rose-400">return</span> jsonify({'error': 'Forbidden'}), 403<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-emerald-400">return</span> jsonify(db.get_user(user_id))
                             </div>
                         </div>
                     </div>
@@ -590,63 +225,79 @@
             </div>
         </div>
 
-        <!-- Sandbox Mode UI -->
-        <div id="sandbox-view" class="sandbox-layout">
-            <div class="panel">
-                <div class="panel-header">
-                    <span class="panel-title">🧪 IDOR 자유 실습 샌드박스</span>
-                    <span class="tag tag-emerald">Free Testing</span>
+        <!-- SANDBOX VIEW -->
+        <div id="sandbox-view" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <h2 class="text-sm font-bold text-slate-900">🧪 IDOR 자유 실습 샌드박스</h2>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">Free Testing</span>
                 </div>
-                <div class="desc-box">
-                    <p>인증/인가 방식 선택 후 다른 사용자의 user_id를 조회해보며 IDOR 취약점을 실험해보세요.</p>
+                
+                <div class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-600">인증/인가 방식 선택</label>
+                        <select id="sandbox-mode" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-500">
+                            <option value="vulnerable">⚠️ 취약한 인가 (URL 파라미터 직접 참조)</option>
+                            <option value="secure">✅ 안전한 인가 (서버 세션 소유권 검증)</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-600">조회할 target_user_id</label>
+                        <input type="number" id="sandbox-userid" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono outline-none focus:bg-white focus:border-indigo-500" value="2">
+                    </div>
+
+                    <button onclick="runSandbox()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-vial"></i>
+                        <span>프로필 API 조회 테스트</span>
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">인가 검증 방식 선택</label>
-                    <select id="sandbox-mode" class="form-control" style="font-family: inherit;">
-                        <option value="vulnerable">⚠️ 취약한 방식 (파라미터 무단 조회 허용)</option>
-                        <option value="secure">✅ 안전한 방식 (세션 인가 검증 차단)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">조회 대상 회원 ID (user_id)</label>
-                    <input type="number" id="sandbox-userid" class="form-control" value="2">
-                </div>
-                <button onclick="runSandbox()" class="btn btn-emerald">🧪 프로필 API 호출 테스트</button>
             </div>
 
-            <div class="panel">
-                <div class="panel-header">
-                    <span class="panel-title">💡 IDOR (부적절한 직접 객체 참조) 개요</span>
+            <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <h2 class="text-sm font-bold text-slate-900">💡 자주 시도되는 IDOR 파라미터 변조 패턴</h2>
+                    <span class="text-xs text-slate-400">식별자 주입 모음</span>
                 </div>
-                <div style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
-                    IDOR(Insecure Direct Object Reference)는 사용자가 제출한 데이터베이스 식별자(user_id, file_id 등)를 백엔드에서 세션 권한 검증 없이 그대로 조회할 때 발생하는 대표적인 OWASP Top 10 권한 관리 취약점입니다.
+
+                <div class="flex flex-col gap-2">
+                    <button onclick="setSandboxPayload(1)" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:border-emerald-400 hover:bg-emerald-50/40 text-xs font-mono text-slate-700 transition-all text-left">
+                        <code>GET /api/profile/1 (본인 관리자 계정 정보)</code>
+                    </button>
+                    <button onclick="setSandboxPayload(2)" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:border-emerald-400 hover:bg-emerald-50/40 text-xs font-mono text-slate-700 transition-all text-left">
+                        <code>GET /api/profile/2 (타인 일반 유저1 정보 무단열람)</code>
+                    </button>
+                    <button onclick="setSandboxPayload(3)" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:border-emerald-400 hover:bg-emerald-50/40 text-xs font-mono text-slate-700 transition-all text-left">
+                        <code>GET /api/profile/3 (타인 일반 유저2 정보 무단열람)</code>
+                    </button>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Client Logic Script -->
     <script>
         const stepsData = {
             1: {
-                title: "1. 본인 회원 정보 조회 (user_id=1)",
-                subtitle: "정상적인 마이페이지 프로필 접근 구조",
-                desc: "로그인 사용자(user_id=1)가 본인의 마이페이지 프로필을 정상 호출합니다.",
-                concept: "💡 정상 상태에서는 자신의 세션과 동일한 식별자로 자신의 정보를 조회합니다.",
-                tag: "실습",
-                tagClass: "tag-emerald",
+                title: "1. 본인 프로필 정보 정상 조회",
+                subtitle: "인증된 사용자 본인의 개인정보 조회",
+                desc: "현재 로그인되어 있는 본인 계정(<code>user_id=1</code>, admin)의 상세 프로필을 API를 통해 조회합니다.",
+                concept: "💡 웹 애플리케이션은 사용자의 로그인 세션 정보에 맞춰 적절한 개인 데이터 조회를 허용해야 합니다.",
+                tag: "기본 실습",
+                tagClass: "bg-sky-50 text-sky-700 border-sky-200",
                 presets: [
-                    { label: "👤 본인 프로필 (user_id=1)", val: 1 }
+                    { label: "👤 본인 프로필 조회 (user_id=1)", val: 1 }
                 ],
                 target: "vulnerable",
                 check: (res) => res.success
             },
             2: {
-                title: "2. IDOR 변조 조작 (user_id=2)",
-                subtitle: "파라미터 숫자 변조를 통한 타인 개인정보 탈취",
-                desc: "로그인 세션(1)은 그대로 둔 채, 파라미터 <code>user_id=2</code>로 숫자만 바꾸어 타인의 주민번호/전화번호를 무단 열람합니다.",
-                concept: "💥 백엔드에서 세션 소유권 검증이 없으면 URL 숫자를 바꾼 공격자가 모든 타인 정보에 접근할 수 있습니다.",
+                title: "2. IDOR 타인 프로필 무단 열람",
+                subtitle: "파라미터 조작을 통한 타인 개인정보 유출",
+                desc: "URL의 <code>user_id</code> 파라미터를 2로 변경하여 다른 사용자의 비공개 이메일과 민감 데이터를 무단 열람해봅니다.",
+                concept: "💥 URL이나 Form의 식별자(user_id)를 검증 없이 수신할 경우 누구나 타인의 데이터를 조회할 수 있습니다.",
                 tag: "공격 실습",
-                tagClass: "tag-rose",
+                tagClass: "bg-rose-50 text-rose-700 border-rose-200",
                 presets: [
                     { label: "⚡ 타인 프로필 무단 열람 (user_id=2)", val: 2 },
                     { label: "⚡ 또 다른 타인 열람 (user_id=3)", val: 3 }
@@ -660,7 +311,7 @@
                 desc: "동일한 IDOR 무단 조작(user_id=2)을 시도하더라도 백엔드가 로그인 세션(1)과 대조하여 403 Forbidden 차단합니다.",
                 concept: "🛡️ 백엔드는 사용자 입력을 절대 신뢰하지 않고 서버 세션의 사용자 식별자로 접근 권한을 확인해야 합니다.",
                 tag: "방어 검증",
-                tagClass: "tag-emerald",
+                tagClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
                 presets: [
                     { label: "🛡️ 타인 ID 인가 차단 테스트 (user_id=2)", val: 2 }
                 ],
@@ -673,7 +324,7 @@
                 desc: "세션 검증이 적용된 안전한 API에서 본인 식별자(user_id=1)로 정상적인 접근을 수행합니다.",
                 concept: "🛡️ 본인의 자원 접근 요청은 403 차단 없이 정상 통과합니다.",
                 tag: "방어 검증",
-                tagClass: "tag-emerald",
+                tagClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
                 presets: [
                     { label: "🛡️ 본인 ID 정상 통과 (user_id=1)", val: 1 }
                 ],
@@ -686,7 +337,7 @@
                 desc: "취약한 파라미터 사용 코드와 안전한 세션 대조 코드를 비교하고 퀴즈를 맞히세요.",
                 concept: "📝 IDOR 예방의 핵심은 요청된 객체/레코드의 소유자 ID와 현재 세션의 ID를 상호 인가(Authorization) 검증하는 것입니다.",
                 tag: "코드 분석",
-                tagClass: "tag-emerald",
+                tagClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
                 hideForm: true,
                 target: "secure",
                 quiz: {
@@ -704,17 +355,23 @@
         let completed = { 1: false, 2: false, 3: false, 4: false, 5: false };
 
         function switchMode(m) {
-            document.getElementById('btn-mode-tutorial').classList.toggle('active', m === 'tutorial');
-            document.getElementById('btn-mode-sandbox').classList.toggle('active', m === 'sandbox');
-            document.getElementById('tutorial-view').style.display = m === 'tutorial' ? 'block' : 'none';
-            document.getElementById('sandbox-view').style.display = m === 'sandbox' ? 'grid' : 'none';
+            const btnTut = document.getElementById('btn-mode-tutorial');
+            const btnSand = document.getElementById('btn-mode-sandbox');
+            
+            if (m === 'tutorial') {
+                btnTut.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs';
+                btnSand.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800';
+                document.getElementById('tutorial-view').classList.remove('hidden');
+                document.getElementById('sandbox-view').classList.add('hidden');
+            } else {
+                btnSand.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs';
+                btnTut.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800';
+                document.getElementById('sandbox-view').classList.remove('hidden');
+                document.getElementById('tutorial-view').classList.add('hidden');
+            }
         }
 
         function jumpStep(n) {
-            if (n > currStep && !completed[currStep] && currStep < 4) {
-                if (!confirm(`⚠️ 현 단계(Step ${currStep}) 실습을 마치지 않으셨습니다. 건너뛰시겠습니까?`)) return;
-            }
-
             currStep = n;
             const data = stepsData[n];
 
@@ -724,7 +381,16 @@
             document.getElementById('step-badge').textContent = `Step ${n} / 5`;
 
             for (let i = 1; i <= 5; i++) {
-                document.getElementById(`pill-${i}`).classList.toggle('active', i === n);
+                const pill = document.getElementById(`pill-${i}`);
+                if (pill) {
+                    if (i === n) {
+                        pill.className = 'px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-emerald-700 border-emerald-500 bg-emerald-50/70 shadow-2xs whitespace-nowrap';
+                    } else if (completed[i]) {
+                        pill.className = 'px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-emerald-700 border-emerald-300 bg-emerald-50/60 whitespace-nowrap';
+                    } else {
+                        pill.className = 'px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all text-slate-600 border-slate-200 bg-slate-50 hover:bg-slate-100 whitespace-nowrap';
+                    }
+                }
             }
 
             document.getElementById('step-title').textContent = data.title;
@@ -734,15 +400,15 @@
 
             const tag = document.getElementById('step-tag');
             tag.textContent = data.tag;
-            tag.className = `tag ${data.tagClass}`;
+            tag.className = `px-2.5 py-1 rounded-md text-xs font-semibold border ${data.tagClass}`;
 
             const presetArea = document.getElementById('preset-area');
             const presetBtns = document.getElementById('preset-buttons');
             if (data.presets && data.presets.length > 0) {
                 presetArea.style.display = 'block';
                 let html = '';
-                data.presets.forEach(p => {
-                    html += `<button type="button" class="preset-chip" onclick="setPreset(${p.val})">${p.label}</button>`;
+                data.presets.forEach((p, idx) => {
+                    html += `<button type="button" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/40 text-xs font-medium text-slate-700 shadow-2xs transition-all cursor-pointer" onclick="applyPreset(${idx})">${p.label}</button>`;
                 });
                 presetBtns.innerHTML = html;
             } else {
@@ -758,7 +424,7 @@
                 document.getElementById('quiz-question').textContent = data.quiz.q;
                 let html = '';
                 data.quiz.opts.forEach((o, idx) => {
-                    html += `<div class="quiz-opt" onclick="checkQuiz(${idx}, ${o.correct})">${o.text}</div>`;
+                    html += `<div class="quiz-opt p-3 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50/40 hover:border-indigo-300 text-xs text-slate-700 font-medium cursor-pointer transition-all" onclick="checkQuiz(${idx}, ${o.correct})">${o.text}</div>`;
                 });
                 document.getElementById('quiz-options').innerHTML = html;
                 document.getElementById('quiz-feedback').style.display = 'none';
@@ -769,11 +435,11 @@
             const modeTag = document.getElementById('mode-tag');
             if (data.target === 'secure') {
                 modeTag.textContent = 'Secure Mode (Session Inspection)';
-                modeTag.className = 'tag tag-emerald';
+                modeTag.className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200';
                 switchCodeTab('secure');
             } else {
                 modeTag.textContent = 'Vulnerable Mode (Direct Parameter)';
-                modeTag.className = 'tag tag-rose';
+                modeTag.className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200';
                 switchCodeTab('vulnerable');
             }
 
@@ -781,14 +447,44 @@
             document.getElementById('btn-next').textContent = (n === 5) ? '🎓 완수' : '다음 단계 →';
         }
 
-        function setPreset(v) {
-            document.getElementById('input-userid').value = v;
+        function applyPreset(idx) {
+            const data = stepsData[currStep];
+            if (data && data.presets && data.presets[idx]) {
+                document.getElementById('input-userid').value = data.presets[idx].val;
+                triggerFormSubmit();
+            }
+        }
+
+        function setSandboxPayload(v) {
+            document.getElementById('sandbox-userid').value = v;
+            runSandbox();
+        }
+
+        function triggerFormSubmit() {
+            const form = document.getElementById('step-form');
+            if (form) {
+                if (typeof form.requestSubmit === 'function') {
+                    form.requestSubmit();
+                } else {
+                    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                }
+            }
         }
 
         async function handleFormSubmit(e) {
-            e.preventDefault();
-            const idVal = document.getElementById('input-userid').value;
+            if (e && e.preventDefault) e.preventDefault();
+            let idVal = document.getElementById('input-userid').value;
             const data = stepsData[currStep];
+
+            if (!idVal) {
+                if (data && data.presets && data.presets[0]) {
+                    idVal = data.presets[0].val;
+                    document.getElementById('input-userid').value = idVal;
+                } else {
+                    idVal = 1;
+                    document.getElementById('input-userid').value = idVal;
+                }
+            }
 
             const ep = (data.target === 'secure') ? `/api/secure-profile/${idVal}` : `/api/vulnerable-profile/${idVal}`;
             document.getElementById('status-text').textContent = 'Executing...';
@@ -801,7 +497,6 @@
                 completed[currStep] = true;
                 const pill = document.getElementById(`pill-${currStep}`);
                 if (pill && !pill.textContent.includes('✓')) {
-                    pill.classList.add('completed');
                     pill.textContent = '✓ ' + pill.textContent;
                 }
             } catch (err) {
@@ -812,72 +507,76 @@
         }
 
         function renderResult(res, target, idVal) {
-            const jsonOut = document.getElementById('json-output');
+            const profileOut = document.getElementById('profile-output');
             const callout = document.getElementById('result-callout');
             const head = document.getElementById('result-head');
             const detail = document.getElementById('result-detail');
 
-            jsonOut.innerHTML = JSON.stringify(res, null, 2);
+            profileOut.textContent = JSON.stringify(res, null, 2);
 
-            callout.className = 'result-callout show';
+            callout.classList.remove('hidden');
             if (res.success) {
                 if (res.is_idor_vulnerable && currStep === 2) {
-                    callout.className = 'result-callout show alert-danger';
-                    head.innerHTML = '🚨 [IDOR 개인정보 탈취 성공!] ' + (res.warning || '');
-                    detail.innerHTML = '💥 로그인된 세션(1) 검증 없이 URL 숫자를 2로 바꾸어 타인의 민감정보(주민번호/연락처)를 무단 열람했습니다!';
+                    callout.className = 'rounded-xl p-4 text-xs space-y-1 transition-all border bg-rose-50/90 border-rose-200 text-rose-900';
+                    head.innerHTML = '🚨 [IDOR 취약점 발생! 타인 프로필 무단 열람 성공] ' + res.message;
+                    detail.innerHTML = '💥 세션 인가 검증이 없어 URL 파라미터 조작(user_id=' + idVal + ')만으로 타인의 개인정보가 유출되었습니다!';
                 } else {
-                    callout.className = 'result-callout show alert-success';
-                    head.innerHTML = '✅ [정상 프로필 조회 완료] ' + (res.message || '');
-                    detail.innerHTML = '본인 식별자 데이터 조회가 정상 처리되었습니다.';
+                    callout.className = 'rounded-xl p-4 text-xs space-y-1 transition-all border bg-indigo-50/90 border-indigo-200 text-indigo-900';
+                    head.innerHTML = '✅ [프로필 조회 성공] ' + res.message;
+                    detail.innerHTML = '정상적인 인가 절차를 통과하여 프로필이 조회되었습니다.';
                 }
             } else {
-                if (target === 'secure' && currStep === 3) {
-                    callout.className = 'result-callout show alert-success';
-                    head.innerHTML = '🛡️ [IDOR 보안 인가 검증 성공! 차단됨] ' + (res.error || '접근 거절');
-                    detail.innerHTML = '✨ 로그인 세션 ID(1)와 요청 대상 ID(2)가 일치하지 않아 403 Forbidden 으로 안전하게 거부되었습니다!';
-                } else {
-                    callout.className = 'result-callout show alert-muted';
-                    head.innerHTML = '❌ [조회 거절] ' + (res.message || res.error || '');
-                    detail.innerHTML = '요청에 실패했습니다.';
-                }
+                callout.className = 'rounded-xl p-4 text-xs space-y-1 transition-all border bg-emerald-50/90 border-emerald-200 text-emerald-900';
+                head.innerHTML = '🛡️ [IDOR 방어 성공! 403 Forbidden] 접근 차단됨';
+                detail.innerHTML = '✨ 백엔드가 서버 세션 사용자(1)와 요청 파라미터(' + idVal + ')를 대조하여 무단 접근을 차단했습니다!';
             }
         }
 
         function switchCodeTab(t) {
             const btns = document.querySelectorAll('.tab-btn');
-            btns[0].classList.toggle('active', t === 'vulnerable');
-            btns[1].classList.toggle('active', t === 'secure');
+            const codeVuln = document.getElementById('code-vulnerable');
+            const codeSec = document.getElementById('code-secure');
 
-            document.getElementById('code-vulnerable').classList.toggle('active', t === 'vulnerable');
-            document.getElementById('code-secure').classList.toggle('active', t === 'secure');
+            if (t === 'vulnerable') {
+                btns[0].className = 'tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs';
+                btns[1].className = 'tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800';
+                codeVuln.classList.remove('hidden');
+                codeSec.classList.add('hidden');
+            } else {
+                btns[1].className = 'tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-indigo-600 shadow-2xs';
+                btns[0].className = 'tab-btn flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-500 hover:text-slate-800';
+                codeSec.classList.remove('hidden');
+                codeVuln.classList.add('hidden');
+            }
         }
 
         function checkQuiz(idx, correct) {
-            const opts = document.querySelectorAll('.quiz-opt');
-            opts.forEach(o => o.classList.remove('correct', 'wrong'));
+            const opts = document.querySelectorAll('#quiz-options .quiz-opt');
+            opts.forEach(o => {
+                o.className = 'quiz-opt p-3 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50/40 hover:border-indigo-300 text-xs text-slate-700 font-medium cursor-pointer transition-all';
+            });
             const fb = document.getElementById('quiz-feedback');
             fb.style.display = 'block';
 
             if (correct) {
-                opts[idx].classList.add('correct');
-                fb.style.color = '#166534';
-                fb.innerHTML = '✨ 정답입니다! IDOR 방어의 핵심은 클라이언트 파라미터를 믿지 않고 서버 세션 정보로 자원 권한을 대조하는 것입니다.';
+                opts[idx].className = 'quiz-opt p-3 rounded-xl border border-emerald-300 bg-emerald-50/80 text-xs text-emerald-900 font-semibold cursor-pointer transition-all';
+                fb.className = 'text-xs font-semibold p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800';
+                fb.innerHTML = '✨ 정답입니다! 클라이언트가 전송한 식별자는 항상 서버 측 로그인 세션과 대조 검증해야 합니다.';
                 completed[currStep] = true;
                 const pill = document.getElementById(`pill-${currStep}`);
                 if (pill && !pill.textContent.includes('✓')) {
-                    pill.classList.add('completed');
                     pill.textContent = '✓ ' + pill.textContent;
                 }
             } else {
-                opts[idx].classList.add('wrong');
-                fb.style.color = '#991b1b';
-                fb.innerHTML = '❌ 다시 생각해보세요. IDOR는 권한 검증 누락으로 인한 자원 오남용 취약점입니다.';
+                opts[idx].className = 'quiz-opt p-3 rounded-xl border border-rose-300 bg-rose-50/80 text-xs text-rose-900 font-semibold cursor-pointer transition-all';
+                fb.className = 'text-xs font-semibold p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800';
+                fb.innerHTML = '❌ 다시 생각해보세요. 식별자 암호화나 HTML 요소 숨김만으로는 IDOR 공격을 차단할 수 없습니다.';
             }
         }
 
         function nextStep() {
             if (currStep < 5) jumpStep(currStep + 1);
-            else alert('🎉 IDOR 시큐어 코딩 모듈을 완수하셨습니다!');
+            else alert('🎉 인증/인가 & IDOR 시큐어 코딩 모듈을 완수하셨습니다!');
         }
 
         function prevStep() {
@@ -886,13 +585,14 @@
 
         async function runSandbox() {
             const mode = document.getElementById('sandbox-mode').value;
-            const userid = document.getElementById('sandbox-userid').value;
-            const ep = (mode === 'secure') ? `/api/secure-profile/${userid}` : `/api/vulnerable-profile/${userid}`;
+            const idVal = document.getElementById('sandbox-userid').value;
+            const ep = (mode === 'secure') ? `/api/secure-profile/${idVal}` : `/api/vulnerable-profile/${idVal}`;
             const res = await fetch(ep);
             const data = await res.json();
-            alert(`결과: ${data.message || data.warning || data.error}`);
+            alert(`결과: ${data.message}\n응답 데이터: ${JSON.stringify(data)}`);
         }
 
+        // Initialize Step 1
         jumpStep(1);
     </script>
 </body>

@@ -420,7 +420,9 @@ def api_vulnerable_xss():
     """XSS 취약점 백엔드 API (HTML Escape 미적용)"""
     data = request.json or {}
     content = data.get('content', '')
-    is_vuln = ('<script>' in content.lower()) or ('onerror=' in content.lower()) or ('javascript:' in content.lower())
+    content_lower = content.lower()
+    xss_keywords = ['<script', 'onerror', 'onload', 'javascript:', '<svg', '<img', '<iframe', 'document.cookie', 'alert(', 'eval(']
+    is_vuln = any(kw in content_lower for kw in xss_keywords)
     
     return jsonify({
         'success': True,

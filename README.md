@@ -1,171 +1,135 @@
-# SQL Injection 취약점 분석 및 시큐어 코딩 로그인 시스템
+# 웹 시큐어 코딩 인터랙티브 학습 스튜디오 (Stitch Security Academy)
+
+> **Python Flask & Tailwind CSS v3 기반의 4대 핵심 웹 보안 취약점 시각화 및 시큐어 코딩 아카데미**
+
+---
 
 ## 📋 프로젝트 개요
 
-Python Flask 기반 SQL Injection 취약점 학습용 애플리케이션입니다. 
-같은 기능을 구현한 **취약한 방식**과 **안전한 방식**을 비교하여 시큐어 코딩의 중요성을 학습할 수 있습니다.
+**Stitch Security Academy**는 웹 애플리케이션의 4대 주요 취약점(**SQL Injection, XSS, CSRF, IDOR**)을 실시간으로 시연하고, **취약한 백엔드 방식 vs 안전한 시큐어 코딩 방식**을 1:1로 비교 분석하는 인터랙티브 교육용 스튜디오입니다.
 
-## 🎯 프로젝트 목표
+눈이 편안한 **Soft Warm White (Tailwind CSS v3)** 디자인과 직관적인 **1-Click 자동 제출(Auto-Submit)** 기능, **백엔드 쿼리/DOM 시각화 도구**를 통해 보안 원리를 부드럽고 명확하게 체득할 수 있습니다.
 
-- **F-01**: 회원가입 (SHA256 비밀번호 해싱)
-- **F-02**: 취약한 로그인 (SQL Injection 공격 가능)
-- **F-03**: 안전한 로그인 (Prepared Statement 방식)
-- **F-04**: 결과 화면 (실행된 SQL 쿼리 시각화)
+---
+
+## 🎯 4대 핵심 학습 모듈 (04 Core Modules)
+
+| 모듈 | 주제 | 주요 학습 내용 | 접속 라우트 |
+| :--- | :--- | :--- | :--- |
+| **Module 01** | **SQL Injection & DB 보안** | f-string 문자열 결합 쿼리의 취약점 분석 및 `Prepared Statement` 파라미터 바인딩 방어 | `/sqli` |
+| **Module 02** | **XSS & 클라이언트 보안** | Reflected 및 Event XSS 스크립트 주입 시연 및 서버측 `HTML Entity Escape` (Sanitization) 방어 | `/xss` |
+| **Module 03** | **CSRF & 세션 보안** | 자동 쿠키 전송을 도용한 위조 송금 공격 관찰 및 `Anti-CSRF Token` & `SameSite` 쿠키 검증 방어 | `/csrf` |
+| **Module 04** | **인증/인가 & IDOR 방어** | 식별자 파라미터 조작(IDOR)을 통한 타인 데이터 무단 열람 시연 및 `서버 세션 인가(RBAC)` 검증 방어 | `/auth` |
+
+---
 
 ## 📁 프로젝트 구조
 
 ```
 Vibe_Coding/
-├── secure.py              # Flask 메인 애플리케이션
-├── requirements.txt       # Python 의존성
-├── security_demo.db       # SQLite 데이터베이스 (자동 생성)
-└── templates/
-    └── index.html         # 웹 UI
+├── secure.py                 # Flask 백엔드 메인 애플리케이션 (API & 라우터)
+├── security_demo.db          # SQLite 데이터베이스 (최초 실행 시 자동 생성)
+├── requirements.txt          # Python 패키지 의존성 (Flask 등)
+├── HOW_TO_USE.md             # 세부 사용자 매뉴얼
+├── README.md                 # 프로젝트 종합 명서
+└── templates/                # Soft Warm White Tailwind CSS v3 템플릿
+    ├── hub.html              # 보안 아카데미 메인 포털 허브 (/)
+    ├── sqli.html             # Module 01: SQL Injection 스튜디오 (/sqli)
+    ├── xss.html              # Module 02: XSS 스튜디오 (/xss)
+    ├── csrf.html             # Module 03: CSRF 스튜디오 (/csrf)
+    ├── auth.html             # Module 04: 인증/인가 & IDOR 스튜디오 (/auth)
+    └── index.html            # SQLi 메인 백업 템플릿
 ```
 
-## 🚀 설치 및 실행
+---
+
+## 🚀 설치 및 실행 방법
 
 ### 1. 필수 요구사항
-- Python 3.7 이상
-- pip (Python 패키지 관리자)
+- **Python 3.7 이상**
+- **pip** (파이썬 패키지 관리자)
 
-### 2. 설치 단계
-
+### 2. 패키지 설치
 ```bash
-# 1. 프로젝트 디렉토리로 이동
-cd c:\Users\test\문서\Vibe_Coding
-
-# 2. Python 가상환경 생성 (선택사항이지만 권장)
-python -m venv venv
-
-# 3. 가상환경 활성화
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-# source venv/bin/activate
-
-# 4. 필수 패키지 설치
+# 필수 패키지 설치 (Flask)
 pip install -r requirements.txt
 ```
 
-### 3. 애플리케이션 실행
-
+### 3. 애플리케이션 구동
 ```bash
 python secure.py
 ```
 
-### 4. 웹 브라우저에서 접속
+### 4. 웹 브라우저 접속
+- **메인 포털 허브**: [http://localhost:5000/](http://localhost:5000/)
+- **SQL Injection 스튜디오**: [http://localhost:5000/sqli](http://localhost:5000/sqli)
+- **XSS 스튜디오**: [http://localhost:5000/xss](http://localhost:5000/xss)
+- **CSRF 스튜디오**: [http://localhost:5000/csrf](http://localhost:5000/csrf)
+- **IDOR 스튜디오**: [http://localhost:5000/auth](http://localhost:5000/auth)
 
-```
-http://localhost:5000
-```
+---
 
-## 💡 사용 방법
+## ✨ 특장점 & UX 개선 사항
 
-### 회원가입
-1. "회원가입" 섹션에서 아이디(3자 이상), 비밀번호(4자 이상) 입력
-2. "회원가입" 버튼 클릭
-3. 데이터베이스에 해시된 비밀번호로 저장됨
+1. **1-Click Auto-Submit 원스톱 실행**
+   - 튜토리얼 프리셋 칩이나 샌드박스 버튼을 클릭하면 **자동 입력 + API 호출 + 결과 시각화**가 원스톱으로 즉시 처리됩니다.
+2. **팝업(confirm) 없는 부드러운 단계 이동**
+   - 상단 Step 타임라인 클릭 시 팝업 차단 걱정 없이 원하는 단계로 즉시 부드럽게 전환됩니다.
+3. **실시간 시각화 Inspector**
+   - **SQL Visualizer**: 백엔드에서 조합된 최종 SQL 문법 하이라이팅
+   - **DOM Render Window**: 주입된 자바스크립트 스크립트/이벤트 동적 실행 시각화
+   - **HTTP Packet Visualizer**: HTTP Header, Cookie, Anti-CSRF Token 검증 패킷 표시
+4. **Soft Warm White Design Standard**
+   - Tailwind CSS v3 기반의 눈이 편안한 Slate/Warm White 테마 및 Glassmorphism 헤더 네비게이션 적용.
 
-### 테스트 계정 사용
-"테스트 계정 & 공격 페이로드 보기" 버튼을 클릭하면 미리 생성된 계정 정보가 표시됩니다:
-- admin / admin123
-- user1 / pass1234
-- user2 / password
-- test / test1234
-- demo / demo123
+---
 
-### 취약한 로그인 테스트 (SQL Injection)
+## 🔒 핵심 시큐어 코딩 요약
 
-#### 정상 로그인:
-- 아이디: `admin`
-- 비밀번호: `admin123`
-- 결과: ✓ 로그인 성공
-
-#### SQL Injection 공격:
-- 아이디: `admin' --`
-- 비밀번호: (아무거나)
-- 결과: ✓ 로그인 성공 (비밀번호 우회!)
-
-- 아이디: `' OR '1'='1`
-- 비밀번호: `' OR '1'='1`
-- 결과: ✓ 로그인 성공 (모든 계정으로 접근 가능!)
-
-### 안전한 로그인 테스트 (Prepared Statement)
-
-#### 정상 로그인:
-- 아이디: `admin`
-- 비밀번호: `admin123`
-- 결과: ✓ 로그인 성공
-
-#### SQL Injection 공격 시도:
-- 아이디: `admin' --`
-- 비밀번호: (아무거나)
-- 결과: ❌ 로그인 실패 (공격 방어됨!)
-
-- 아이디: `' OR '1'='1`
-- 비밀번호: `' OR '1'='1`
-- 결과: ❌ 로그인 실패 (공격 방어됨!)
-
-## 🔒 보안 개념
-
-### 취약한 방식 (문자열 포맷팅)
+### 1. SQL Injection 방어 (Prepared Statement)
 ```python
-query = f"SELECT * FROM users WHERE username = '{username}' AND password_hash = '{password_hash}'"
-cursor.execute(query)
-```
-**문제점**: 사용자 입력이 SQL 구문으로 해석될 수 있음
+# ❌ 취약한 코드 (f-string)
+query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
 
-### 안전한 방식 (Prepared Statement)
+# ✅ 안전한 코드 (파라미터 바인딩)
+query = "SELECT * FROM users WHERE username=? AND password=?"
+cursor.execute(query, (username, password))
+```
+
+### 2. XSS 방어 (HTML Entity Escape)
 ```python
-query = "SELECT * FROM users WHERE username = ? AND password_hash = ?"
-cursor.execute(query, (username, password_hash))
-```
-**장점**: 입력값이 데이터로만 처리되어 SQL 구문으로 해석되지 않음
+# ❌ 취약한 코드 (Raw Output)
+return f"<div>검색어: {content}</div>"
 
-## 🛠️ 기술 스택
-
-| 기술 | 용도 |
-|------|------|
-| Python 3 | 백엔드 언어 |
-| Flask | 웹 프레임워크 |
-| SQLite3 | 데이터베이스 |
-| SHA256 | 비밀번호 해싱 |
-| HTML5/CSS3/JavaScript | 프론트엔드 |
-
-## 📊 데이터베이스 스키마
-
-### users 테이블
-```sql
-CREATE TABLE users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+# ✅ 안전한 코드 (html.escape)
+escaped = html.escape(content)
+return f"<div>검색어: {escaped}</div>"
 ```
 
-## 🎓 학습 목표
+### 3. CSRF 방어 (Anti-CSRF Token & SameSite)
+```python
+# ✅ X-CSRF-Token 헤더 검증
+csrf_token = request.headers.get('X-CSRF-Token')
+if csrf_token != 'VALID_TOKEN':
+    return jsonify({'error': 'Invalid CSRF Token'}), 403
+```
 
-1. **SQL Injection의 원리** 이해
-2. **취약한 코딩 패턴** 인식
-3. **Prepared Statement의 필요성** 체감
-4. **시큐어 코딩 관행** 학습
-5. **실제 공격 벡터** 체험
+### 4. IDOR 방어 (서버 세션 인가 대조)
+```python
+# ✅ 요청 ID와 로그인 세션 ID 상호 검증
+if str(session.get('user_id')) != str(request_user_id):
+    return jsonify({'error': 'Forbidden'}), 403
+```
+
+---
 
 ## ⚠️ 주의사항
 
-- 이 애플리케이션은 **교육용**입니다
-- **실제 프로덕션 환경**에서는 사용하지 마세요
-- 더 강화된 보안 조치 필요 (암호화, SSL/TLS 등)
-- 개발 모드(`debug=True`)는 로컬 개발용만 사용
+- 본 애플리케이션은 보안 및 시큐어 코딩 학습을 위한 **교육용 시뮬레이터**입니다.
+- 웹사이트 공격 및 악용 목적으로 사용하실 수 없으며, 로컬 개발 환경(`localhost`)에서 실습용으로만 활용하세요.
+
+---
 
 ## 📝 라이선스
 
-개인 학습용으로 자유롭게 사용 가능합니다.
-
-## 🔗 참고 자료
-
-- [OWASP SQL Injection](https://owasp.org/www-community/attacks/SQL_Injection)
-- [Python SQLite3 안전한 쿼리](https://docs.python.org/3/library/sqlite3.html#how-to-write-portable-sql-code)
-- [Prepared Statements](https://en.wikipedia.org/wiki/Prepared_statement)
+개인 학습 및 보안 교육용으로 자유롭게 사용 가능합니다.
