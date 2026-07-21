@@ -1,812 +1,625 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL Injection & 시큐어 코딩 인터랙티브 학습 스튜디오</title>
-    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <title>SQL Injection & DB 보안 스튜디오 — Stitch Security</title>
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep: #090d16;
-            --bg-card: rgba(18, 24, 38, 0.75);
-            --bg-card-hover: rgba(26, 35, 56, 0.85);
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --border-glow: rgba(99, 102, 241, 0.3);
+            --bg-canvas: #090d14;
+            --bg-surface: #111726;
+            --bg-surface-hover: #182238;
+            --bg-elevated: #1e293b;
             
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --primary-glow: rgba(99, 102, 241, 0.35);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-medium: rgba(255, 255, 255, 0.14);
             
-            --accent-cyan: #06b6d4;
-            --accent-emerald: #10b981;
-            --accent-rose: #f43f5e;
-            --accent-amber: #f59e0b;
+            --brand-primary: #6366f1;
+            --brand-primary-hover: #4f46e5;
+            --brand-sky: #0284c7;
+            --brand-emerald: #10b981;
+            --brand-rose: #f43f5e;
             
-            --text-main: #f8fafc;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
             --text-muted: #94a3b8;
-            --text-sub: #64748b;
-            
-            --radius-lg: 18px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
+            --text-dim: #64748b;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            background-color: var(--bg-deep);
-            background-image: 
-                radial-gradient(at 10% 10%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 90% 80%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
-                radial-gradient(at 50% 50%, rgba(244, 63, 94, 0.05) 0px, transparent 50%);
-            background-attachment: fixed;
-            color: var(--text-main);
+            background-color: var(--bg-canvas);
+            color: var(--text-body);
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
             min-height: 100vh;
-            padding: 24px;
-            line-height: 1.6;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 1280px;
+            max-width: 1240px;
             margin: 0 auto;
+            padding: 0 24px;
         }
 
-        /* Top Header */
+        /* Navbar Header */
         header {
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(9, 13, 20, 0.85);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-inner {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 24px;
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-lg);
-            margin-bottom: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            height: 64px;
         }
 
-        .logo-area {
+        .nav-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
-        .logo-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .logo-title h1 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, #ffffff, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .logo-title p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .nav-back-btn {
+        .back-link {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid var(--border-glass);
-            color: var(--text-main);
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-            font-weight: 600;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
             text-decoration: none;
-            transition: all 0.2s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
         }
 
-        .nav-back-btn:hover {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 0 12px var(--primary-glow);
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-heading);
         }
 
-        .mode-switcher {
+        .page-title-wrap {
             display: flex;
-            background: rgba(15, 23, 42, 0.6);
-            padding: 4px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-glass);
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
         }
 
         .mode-btn {
-            padding: 8px 16px;
-            border-radius: var(--radius-sm);
+            padding: 6px 14px;
+            border-radius: 6px;
             border: none;
             background: transparent;
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
         .mode-btn.active {
-            background: var(--primary);
+            background: var(--brand-primary);
             color: white;
-            box-shadow: 0 2px 10px var(--primary-glow);
         }
 
-        /* Progress Bar Section */
-        .progress-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-lg);
+        /* Timeline Progress Card */
+        .timeline-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
             padding: 20px 24px;
-            margin-bottom: 24px;
+            margin: 24px 0;
         }
 
-        .progress-header {
+        .timeline-header {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .progress-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--accent-cyan);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .progress-percentage {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .progress-track {
-            height: 10px;
-            background: rgba(15, 23, 42, 0.8);
-            border-radius: 999px;
-            overflow: hidden;
-            border: 1px solid var(--border-glass);
             margin-bottom: 16px;
         }
 
-        .progress-fill {
-            height: 100%;
-            width: 16.66%;
-            background: linear-gradient(90deg, var(--primary), var(--accent-cyan));
+        .progress-bar-bg {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.06);
             border-radius: 999px;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 12px var(--primary-glow);
+            overflow: hidden;
+            margin-bottom: 16px;
         }
 
-        /* Steps Pill Navigator */
-        .step-pills {
+        .progress-bar-fill {
+            height: 100%;
+            width: 16.6%;
+            background: var(--brand-primary);
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+
+        .step-timeline {
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding-bottom: 4px;
-            scrollbar-width: none;
         }
 
-        .step-pills::-webkit-scrollbar {
-            display: none;
-        }
-
-        .step-pill {
+        .step-item {
             flex: 1;
             min-width: 140px;
-            padding: 10px 14px;
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-md);
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
             font-size: 0.8rem;
             font-weight: 500;
-            color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.2s ease;
             text-align: center;
+            transition: all 0.15s ease;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        .step-pill:hover {
-            border-color: rgba(99, 102, 241, 0.4);
-            color: var(--text-main);
-        }
-
-        .step-pill.active {
-            background: rgba(99, 102, 241, 0.15);
-            border-color: var(--primary);
-            color: var(--text-main);
+        .step-item.active {
+            background: rgba(99, 102, 241, 0.12);
+            border-color: var(--brand-primary);
+            color: var(--text-heading);
             font-weight: 600;
-            box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
         }
 
-        .step-pill.completed {
-            border-color: rgba(16, 185, 129, 0.4);
-            color: var(--accent-emerald);
+        .step-item.completed {
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--brand-emerald);
         }
 
-        /* Main Workspace Grid */
-        .workspace-grid {
+        /* Workspace Grid */
+        .workspace {
             display: grid;
-            grid-template-columns: 1fr 1.1fr;
-            gap: 24px;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 20px;
+            margin-bottom: 60px;
         }
 
         @media (max-width: 992px) {
-            .workspace-grid {
-                grid-template-columns: 1fr;
-            }
+            .workspace { grid-template-columns: 1fr; }
         }
 
-        /* Card Panels */
-        .card-panel {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-lg);
-            padding: 28px;
-            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+        .panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
         }
 
-        .card-header {
+        .panel-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
             margin-bottom: 20px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--border-glass);
         }
 
-        .card-title {
-            font-size: 1.15rem;
+        .panel-title {
+            font-size: 1rem;
             font-weight: 700;
-            color: var(--text-main);
+            color: var(--text-heading);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 999px;
+        .tag {
             font-size: 0.75rem;
             font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .badge-primary {
-            background: rgba(99, 102, 241, 0.15);
-            color: var(--primary);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-        }
+        .tag-indigo { background: rgba(99, 102, 241, 0.12); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.25); }
+        .tag-rose { background: rgba(244, 63, 94, 0.12); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.25); }
+        .tag-emerald { background: rgba(16, 185, 129, 0.12); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.25); }
 
-        .badge-danger {
-            background: rgba(244, 63, 94, 0.15);
-            color: var(--accent-rose);
-            border: 1px solid rgba(244, 63, 94, 0.3);
-        }
-
-        .badge-success {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--accent-emerald);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        /* Step Narrative Area */
-        .step-content {
-            flex: 1;
-        }
-
-        .step-desc-box {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-md);
-            padding: 20px;
+        .desc-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
             margin-bottom: 20px;
         }
 
-        .step-desc-box h3 {
-            font-size: 1.1rem;
+        .desc-box h4 {
+            font-size: 0.95rem;
             font-weight: 700;
-            color: var(--accent-cyan);
-            margin-bottom: 8px;
+            color: var(--text-heading);
+            margin-bottom: 6px;
         }
 
-        .step-desc-box p {
-            font-size: 0.92rem;
+        .desc-box p {
+            font-size: 0.875rem;
             color: var(--text-muted);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
-        .concept-highlight {
-            background: rgba(99, 102, 241, 0.1);
-            border-left: 3px solid var(--primary);
-            padding: 10px 14px;
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            margin-bottom: 12px;
+        .concept-note {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 3px solid var(--brand-primary);
+            padding: 8px 12px;
+            font-size: 0.825rem;
+            color: var(--text-body);
+            border-radius: 0 6px 6px 0;
         }
 
-        /* Quick Action Helper Preset */
-        .preset-area {
-            margin-top: 16px;
-        }
-
+        /* Preset Buttons */
         .preset-title {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            color: var(--text-sub);
+            color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 8px;
         }
 
-        .preset-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #e2e8f0;
-            padding: 8px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 0.85rem;
+        .preset-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-body);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.825rem;
             cursor: pointer;
-            transition: all 0.2s ease;
-            margin-right: 8px;
-            margin-bottom: 8px;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            transition: all 0.15s ease;
         }
 
-        .preset-btn:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-            box-shadow: 0 0 12px var(--primary-glow);
+        .preset-chip:hover {
+            background: var(--bg-surface-hover);
+            border-color: var(--brand-primary);
+            color: var(--text-heading);
         }
 
-        .preset-btn code {
+        .preset-chip code {
             font-family: 'JetBrains Mono', monospace;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: var(--accent-cyan);
+            color: #818cf8;
         }
 
-        /* Interactive Form Controls */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
+        /* Inputs & Buttons */
+        .form-group { margin-bottom: 16px; }
+        
         .form-label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.825rem;
             font-weight: 600;
             color: var(--text-muted);
             margin-bottom: 6px;
         }
 
-        .form-input {
+        .form-control {
             width: 100%;
-            padding: 12px 16px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-md);
-            color: var(--text-main);
-            font-size: 0.95rem;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-heading);
+            font-size: 0.9rem;
             font-family: 'JetBrains Mono', monospace;
-            transition: all 0.2s ease;
+            transition: border-color 0.15s ease;
         }
 
-        .form-input:focus {
+        .form-control:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 12px var(--primary-glow);
+            border-color: var(--brand-primary);
         }
 
         .btn {
             width: 100%;
-            padding: 12px 20px;
-            border-radius: var(--radius-md);
+            padding: 10px 18px;
+            border-radius: 8px;
             border: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+        .btn-indigo {
+            background: var(--brand-primary);
             color: white;
-            box-shadow: 0 4px 16px var(--primary-glow);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px var(--primary-glow);
+        .btn-indigo:hover {
+            background: var(--brand-primary-hover);
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, var(--accent-rose), #e11d48);
-            color: white;
-            box-shadow: 0 4px 16px rgba(244, 63, 94, 0.3);
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-body);
         }
 
-        .btn-secondary {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid var(--border-glass);
-            color: var(--text-main);
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-heading);
         }
 
-        /* Navigation Button Bar */
-        .step-nav-bar {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-glass);
-        }
-
-        .step-nav-bar .btn {
-            width: auto;
-            flex: 1;
-        }
-
-        /* Query & Result Inspector Panel */
-        .query-inspector {
-            background: rgba(11, 16, 26, 0.95);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-top: 20px;
+        /* Code & Query Inspector */
+        .editor-container {
+            background: #090d16;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
+            overflow: hidden;
         }
 
-        .query-inspector-header {
+        .editor-bar {
+            background: #111726;
+            padding: 8px 14px;
+            border-bottom: 1px solid var(--border-subtle);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            color: var(--text-sub);
+            justify-content: space-between;
             font-size: 0.75rem;
+            color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
 
-        .code-block {
-            background: #050811;
-            border-radius: var(--radius-sm);
+        .editor-body {
             padding: 14px;
             color: #a5b4fc;
-            overflow-x: auto;
             white-space: pre-wrap;
             word-break: break-all;
-            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .code-block .sql-kw { color: #f43f5e; font-weight: 700; }
-        .code-block .sql-str { color: #10b981; }
+        .editor-body .kw { color: #f43f5e; font-weight: 600; }
+        .editor-body .str { color: #10b981; }
 
-        .result-box {
-            padding: 14px 18px;
-            border-radius: var(--radius-md);
+        .result-callout {
+            padding: 14px 16px;
+            border-radius: 8px;
             margin-top: 16px;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             display: none;
-            animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .result-callout.show { display: block; }
+        .result-callout.alert-danger { background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.3); color: #fda4af; }
+        .result-callout.alert-success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+        .result-callout.alert-muted { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-subtle); color: var(--text-muted); }
 
-        .result-box.show {
-            display: block;
-        }
-
-        .result-box.success {
-            background: rgba(16, 185, 129, 0.12);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #34d399;
-        }
-
-        .result-box.vulnerable-success {
-            background: rgba(244, 63, 94, 0.15);
-            border: 1px solid rgba(244, 63, 94, 0.4);
-            color: #fb7185;
-        }
-
-        .result-box.error {
-            background: rgba(239, 68, 68, 0.12);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-        }
-
-        /* Code Comparison Tabs */
-        .code-tabs {
+        /* Code Switch Tabs */
+        .tab-bar {
             display: flex;
             gap: 4px;
-            background: rgba(15, 23, 42, 0.8);
-            padding: 4px;
-            border-radius: var(--radius-md);
-            margin-bottom: 12px;
-            border: 1px solid var(--border-glass);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            margin-bottom: 10px;
         }
 
-        .code-tab {
+        .tab-btn {
             flex: 1;
-            padding: 8px 12px;
+            padding: 6px 12px;
             border: none;
             background: transparent;
             color: var(--text-muted);
             font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
-            border-radius: var(--radius-sm);
-            transition: all 0.2s ease;
+            border-radius: 6px;
         }
 
-        .code-tab.active {
-            background: var(--bg-card);
-            color: var(--text-main);
-            border: 1px solid var(--border-glass);
+        .tab-btn.active {
+            background: var(--bg-surface);
+            color: var(--text-heading);
         }
 
-        .code-content {
-            display: none;
-        }
-
-        .code-content.active {
-            display: block;
-        }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
 
         /* Quiz Component */
         .quiz-card {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid var(--border-glass);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
         }
 
-        .quiz-option {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid var(--border-glass);
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
+        .quiz-opt {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            padding: 10px 12px;
+            border-radius: 6px;
             margin-top: 8px;
-            font-size: 0.88rem;
+            font-size: 0.875rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
-        .quiz-option:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
+        .quiz-opt:hover {
+            border-color: var(--brand-primary);
+            background: rgba(99, 102, 241, 0.08);
         }
 
-        .quiz-option.correct {
-            background: rgba(16, 185, 129, 0.2);
-            border-color: var(--accent-emerald);
-            color: #34d399;
-        }
-
-        .quiz-option.wrong {
-            background: rgba(244, 63, 94, 0.2);
-            border-color: var(--accent-rose);
-            color: #fb7185;
-        }
+        .quiz-opt.correct { background: rgba(16, 185, 129, 0.15); border-color: var(--brand-emerald); color: #6ee7b7; }
+        .quiz-opt.wrong { background: rgba(244, 63, 94, 0.15); border-color: var(--brand-rose); color: #fda4af; }
 
         /* Sandbox Mode Layout */
-        .sandbox-layout {
-            display: none;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        @media (max-width: 992px) {
-            .sandbox-layout {
-                grid-template-columns: 1fr;
-            }
-        }
+        .sandbox-layout { display: none; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 992px) { .sandbox-layout { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Top Header -->
-        <header>
-            <div class="logo-area">
-                <a href="/" class="nav-back-btn">← 메인 허브로</a>
-                <div class="logo-icon">🔐</div>
-                <div class="logo-title">
-                    <h1>SQL Injection & 시큐어 코딩 학습 스튜디오</h1>
-                    <p>Module 1: Database Security Lab</p>
+    <!-- Navbar -->
+    <header>
+        <div class="container">
+            <div class="nav-inner">
+                <div class="nav-left">
+                    <a href="/" class="back-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                        <span>포털 허브</span>
+                    </a>
+                    <div class="page-title-wrap">
+                        <span class="page-title">SQL Injection & DB 보안 스튜디오</span>
+                    </div>
+                </div>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" id="btn-mode-tutorial" onclick="switchMode('tutorial')">🎓 단계별 튜토리얼</button>
+                    <button class="mode-btn" id="btn-mode-sandbox" onclick="switchMode('sandbox')">🧪 자유 샌드박스</button>
                 </div>
             </div>
-            <div class="mode-switcher">
-                <button class="mode-btn active" id="btn-mode-tutorial" onclick="switchMode('tutorial')">🎓 단계별 튜토리얼</button>
-                <button class="mode-btn" id="btn-mode-sandbox" onclick="switchMode('sandbox')">🧪 자유 샌드박스 실습</button>
-            </div>
-        </header>
+        </div>
+    </header>
 
+    <main class="container">
         <!-- Tutorial Mode UI -->
         <div id="tutorial-view">
-            <!-- Progress Tracker -->
-            <div class="progress-card">
-                <div class="progress-header">
-                    <div class="progress-label">
-                        <span>🎯 진행 상태</span>
-                        <span id="step-badge-text" class="badge badge-primary">Step 1 / 6</span>
-                    </div>
-                    <div class="progress-percentage" id="progress-text">16.6% 완료</div>
+            <!-- Progress Card -->
+            <div class="timeline-card">
+                <div class="timeline-header">
+                    <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-muted);">
+                        진행률 <span id="progress-percent" style="color: var(--text-heading); font-family: 'JetBrains Mono', monospace;">16.6%</span>
+                    </span>
+                    <span id="step-badge" class="tag tag-indigo">Step 1 / 6</span>
                 </div>
-                <div class="progress-track">
-                    <div class="progress-fill" id="progress-bar"></div>
+                <div class="progress-bar-bg">
+                    <div id="progress-fill" class="progress-bar-fill"></div>
                 </div>
-
-                <!-- Step Navigator Pills -->
-                <div class="step-pills">
-                    <button class="step-pill active" id="pill-1" onclick="jumpToStep(1)">1. 정상 로그인</button>
-                    <button class="step-pill" id="pill-2" onclick="jumpToStep(2)">2. 조건 우회 공격</button>
-                    <button class="step-pill" id="pill-3" onclick="jumpToStep(3)">3. 주석 우회 공격</button>
-                    <button class="step-pill" id="pill-4" onclick="jumpToStep(4)">4. Prepared Statement</button>
-                    <button class="step-pill" id="pill-5" onclick="jumpToStep(5)">5. 시큐어 코딩 코드 분석</button>
-                    <button class="step-pill" id="pill-6" onclick="jumpToStep(6)">6. 종합 퀴즈 & 검증</button>
+                <div class="step-timeline">
+                    <button id="pill-1" class="step-item active" onclick="jumpStep(1)">1. 정상 로그인</button>
+                    <button id="pill-2" class="step-item" onclick="jumpStep(2)">2. 조건 우회</button>
+                    <button id="pill-3" class="step-item" onclick="jumpStep(3)">3. 주석 우회</button>
+                    <button id="pill-4" class="step-item" onclick="jumpStep(4)">4. Prepared Stmt</button>
+                    <button id="pill-5" class="step-item" onclick="jumpStep(5)">5. 코드 비교</button>
+                    <button id="pill-6" class="step-item" onclick="jumpStep(6)">6. 최종 퀴즈</button>
                 </div>
             </div>
 
-            <!-- Workspace Grid -->
-            <div class="workspace-grid">
-                <!-- Left Panel: Guided Mission & Action -->
-                <div class="card-panel">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span id="step-title">1. 정상 로그인 메커니즘 이해하기</span>
-                        </div>
-                        <span id="step-type-badge" class="badge badge-primary">실습 단계</span>
+            <!-- Workspace -->
+            <div class="workspace">
+                <!-- Left Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <span id="step-title" class="panel-title">1. 정상 로그인 메커니즘 이해하기</span>
+                        <span id="step-tag" class="tag tag-indigo">실습</span>
                     </div>
 
-                    <div class="step-content">
-                        <!-- Step Description -->
-                        <div class="step-desc-box">
-                            <h3 id="step-subtitle">정상적인 사용자 인증 쿼리의 동작 방식</h3>
-                            <p id="step-instruction">
-                                서비스에서 사용자가 입력한 아이디와 암호화된 비밀번호가 데이터베이스 조회(SELECT) 쿼리와 어떻게 결합되어 로그인 성공 여부를 판단하는지 확인합니다.
-                            </p>
-                            <div class="concept-highlight" id="step-concept">
-                                💡 <strong>핵심 개념:</strong> 일반적인 로그인은 <code>WHERE username = '입력값' AND password_hash = '해시값'</code> 조건에 일치하는 회원 레코드가 1개 이상 존재할 때 성립됩니다.
+                    <div style="flex: 1;">
+                        <div class="desc-box">
+                            <h4 id="step-subtitle">정상적인 사용자 인증 쿼리의 동작 방식</h4>
+                            <p id="step-desc">사용자가 입력한 아이디와 비밀번호가 데이터베이스 조회(SELECT) 쿼리와 결합되어 로그인 성공 여부를 판단하는 과정을 확인합니다.</p>
+                            <div id="step-concept" class="concept-note">
+                                💡 일반적인 로그인은 <code>WHERE username = '입력값' AND password_hash = '해시값'</code> 조건이 일치할 때 성립합니다.
                             </div>
                         </div>
 
-                        <!-- Presets helper -->
-                        <div class="preset-area" id="preset-container">
-                            <div class="preset-title">⚡ 빠른 테스트 입력 세팅</div>
-                            <button class="preset-btn" onclick="applyPreset('admin', 'admin123')">
-                                🔑 admin 계정 (<code>admin</code> / <code>admin123</code>)
-                            </button>
+                        <div id="preset-area" style="margin-bottom: 16px;">
+                            <div class="preset-title">빠른 테스트 입력</div>
+                            <div id="preset-buttons">
+                                <button type="button" class="preset-chip" onclick="setPreset('admin', 'admin123')">🔑 admin 계정 (<code>admin</code> / <code>admin123</code>)</button>
+                            </div>
                         </div>
 
-                        <!-- Interactive Form -->
-                        <form id="step-form" onsubmit="handleStepSubmit(event)" style="margin-top: 20px;">
+                        <form id="step-form" onsubmit="handleFormSubmit(event)">
                             <div class="form-group">
-                                <label class="form-label" for="input-username">아이디 (Username)</label>
-                                <input type="text" id="input-username" class="form-input" placeholder="아이디 입력" required>
+                                <label class="form-label" for="input-user">아이디 (Username)</label>
+                                <input type="text" id="input-user" class="form-control" placeholder="아이디 입력" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="input-password">비밀번호 (Password)</label>
-                                <input type="password" id="input-password" class="form-input" placeholder="비밀번호 입력">
+                                <label class="form-label" for="input-pass">비밀번호 (Password)</label>
+                                <input type="password" id="input-pass" class="form-control" placeholder="비밀번호 입력">
                             </div>
-                            <button type="submit" id="btn-submit-action" class="btn btn-primary">
-                                ▶️ 실행 및 로그인 테스트
-                            </button>
+                            <button type="submit" class="btn btn-indigo">▶️ 쿼리 실행 및 로그인 테스트</button>
                         </form>
 
-                        <!-- Step Quiz Container -->
-                        <div id="quiz-container" class="quiz-card" style="display: none;">
-                            <div style="font-weight: 700; color: var(--accent-cyan); font-size: 0.95rem; margin-bottom: 8px;">
-                                ❓ 이해도 점검 퀴즈
-                            </div>
-                            <div id="quiz-question" style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 12px;"></div>
+                        <div id="quiz-area" class="quiz-card" style="display: none;">
+                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-heading); margin-bottom: 8px;">❓ 이해도 점검 퀴즈</div>
+                            <div id="quiz-question" style="font-size: 0.875rem; color: var(--text-body); margin-bottom: 10px;"></div>
                             <div id="quiz-options"></div>
-                            <div id="quiz-feedback" style="margin-top: 10px; font-size: 0.85rem; display: none;"></div>
+                            <div id="quiz-feedback" style="margin-top: 10px; font-size: 0.825rem; display: none;"></div>
                         </div>
                     </div>
 
-                    <!-- Step Navigation Bar -->
-                    <div class="step-nav-bar">
-                        <button class="btn btn-secondary" id="btn-prev-step" onclick="prevStep()" disabled>← 이전 단계</button>
-                        <button class="btn btn-primary" id="btn-next-step" onclick="nextStep()">다음 단계 →</button>
+                    <div style="display: flex; gap: 10px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
+                        <button class="btn btn-ghost" id="btn-prev" onclick="prevStep()" disabled>← 이전 단계</button>
+                        <button class="btn btn-indigo" id="btn-next" onclick="nextStep()">다음 단계 →</button>
                     </div>
                 </div>
 
-                <!-- Right Panel: Live Inspection & SQL Visualizer -->
-                <div class="card-panel">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <span>🔍 실시간 쿼리 및 실행 결과 분석</span>
-                        </div>
-                        <span id="status-badge" class="badge badge-primary">대기 중</span>
+                <!-- Right Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <span class="panel-title">🔍 백엔드 쿼리 및 실행 결과 시각화</span>
+                        <span id="mode-tag" class="tag tag-rose">Vulnerable Mode</span>
                     </div>
 
                     <div style="flex: 1; display: flex; flex-direction: column;">
-                        <!-- SQL Query Inspector -->
-                        <div class="query-inspector">
-                            <div class="query-inspector-header">
+                        <div class="editor-container">
+                            <div class="editor-bar">
                                 <span>Executed SQL Query</span>
-                                <span id="query-mode-tag" style="color: var(--accent-rose);">Vulnerable Mode</span>
+                                <span id="status-text">Ready</span>
                             </div>
-                            <div class="code-block" id="query-code-display">
+                            <div class="editor-body" id="query-output">
 -- 왼쪽 입력 폼에서 아이디와 비밀번호를 입력 후 실행 버튼을 누르세요.
 -- 백엔드 데이터베이스에서 실행되는 조작된 SQL 문이 이곳에 표시됩니다.
                             </div>
                         </div>
 
-                        <!-- Result Display Box -->
-                        <div id="result-display" class="result-box">
-                            <div id="result-title" style="font-weight: 700; margin-bottom: 4px;"></div>
-                            <div id="result-body"></div>
+                        <div id="result-callout" class="result-callout">
+                            <div id="result-head" style="font-weight: 700; margin-bottom: 4px;"></div>
+                            <div id="result-detail"></div>
                         </div>
 
-                        <!-- Code Inspector Tabs (Vulnerable vs Secure) -->
                         <div style="margin-top: 24px;">
-                            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
-                                <span>💻 백엔드 구현 소스코드 비교 (secure.py)</span>
+                            <div class="tab-bar">
+                                <button class="tab-btn active" onclick="switchCodeTab('vulnerable')">⚠️ 취약한 방식 코드</button>
+                                <button class="tab-btn" onclick="switchCodeTab('secure')">✅ 안전한 Prepared Statement 코드</button>
                             </div>
-                            <div class="code-tabs">
-                                <button class="code-tab active" onclick="switchCodeTab('vulnerable')">⚠️ 취약한 방식 코드</button>
-                                <button class="code-tab" onclick="switchCodeTab('secure')">✅ 안전한 Prepared Statement 코드</button>
-                            </div>
-                            <div id="code-vulnerable" class="code-content active">
-                                <div class="code-block">
-<span class="sql-kw">def</span> vulnerable_login(username, password):
-    <span class="sql-str"># ❌ 문자열 결합 방식 (f-string) 사용 - SQL Injection 취약!</span>
-    query = <span class="sql-str">f"SELECT * FROM users WHERE username = '{username}' AND password_hash = '{password_hash}'"</span>
+                            <div id="code-vulnerable" class="tab-pane active">
+                                <div class="editor-container">
+                                    <div class="editor-body">
+<span class="kw">def</span> vulnerable_login(username, password):
+    <span class="str"># ❌ 문자열 포맷팅 (f-string) 사용 - SQL Injection 취약!</span>
+    query = <span class="str">f"SELECT * FROM users WHERE username = '{username}' AND password_hash = '{password_hash}'"</span>
     cursor.execute(query)
+                                    </div>
                                 </div>
                             </div>
-                            <div id="code-secure" class="code-content">
-                                <div class="code-block">
-<span class="sql-kw">def</span> secure_login(username, password):
-    <span class="sql-str"># ✅ Prepared Statement 사용 - 입력값을 단순 '데이터'로 처리</span>
-    query = <span class="sql-str">"SELECT * FROM users WHERE username = ? AND password_hash = ?"</span>
+                            <div id="code-secure" class="tab-pane">
+                                <div class="editor-container">
+                                    <div class="editor-body">
+<span class="kw">def</span> secure_login(username, password):
+    <span class="str"># ✅ Prepared Statement 사용 - 입력값을 단순 '데이터'로 수신</span>
+    query = <span class="str">"SELECT * FROM users WHERE username = ? AND password_hash = ?"</span>
     cursor.execute(query, (username, password_hash))
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -815,151 +628,115 @@
             </div>
         </div>
 
-        <!-- Free Sandbox Mode UI -->
+        <!-- Sandbox Mode UI -->
         <div id="sandbox-view" class="sandbox-layout">
-            <!-- Left Sandbox Panel -->
-            <div class="card-panel">
-                <div class="card-header">
-                    <div class="card-title">
-                        <span>🧪 자유 실습 샌드박스 (Free Testing Lab)</span>
-                    </div>
-                    <span class="badge badge-primary">자유 테스트</span>
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">🧪 자유 실습 샌드박스</span>
+                    <span class="tag tag-indigo">Free Testing</span>
                 </div>
-                <div class="step-desc-box">
-                    <p>취약한 로그인과 안전한 로그인을 자율적으로 선택하여 입력 페이로드를 마음껏 실험해볼 수 있는 샌드박스 공간입니다.</p>
+                <div class="desc-box">
+                    <p>취약한 로그인과 안전한 로그인을 원하는 대로 선택하고 커스텀 페이로드를 마음껏 테스트해보세요.</p>
                 </div>
-
                 <div class="form-group">
                     <label class="form-label">로그인 처리 방식 선택</label>
-                    <select id="sandbox-mode-select" class="form-input" style="font-family: inherit;">
-                        <option value="vulnerable">⚠️ 취약한 로그인 (SQL Injection 가능)</option>
-                        <option value="secure">✅ 안전한 로그인 (Prepared Statement 차단)</option>
+                    <select id="sandbox-mode" class="form-control" style="font-family: inherit;">
+                        <option value="vulnerable">⚠️ 취약한 로그인 (f-string)</option>
+                        <option value="secure">✅ 안전한 로그인 (Prepared Statement)</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">아이디 (Username)</label>
-                    <input type="text" id="sandbox-username" class="form-input" placeholder="페이로드 또는 아이디 입력">
+                    <input type="text" id="sandbox-user" class="form-control" placeholder="아이디 입력">
                 </div>
                 <div class="form-group">
                     <label class="form-label">비밀번호 (Password)</label>
-                    <input type="password" id="sandbox-password" class="form-input" placeholder="비밀번호 입력">
+                    <input type="password" id="sandbox-pass" class="form-control" placeholder="비밀번호 입력">
                 </div>
-                <button onclick="runSandboxLogin()" class="btn btn-primary">🧪 샌드박스 로그인 실행</button>
-
-                <div class="preset-area" style="margin-top: 20px;">
-                    <div class="preset-title">💡 자주 사용되는 주요 페이로드 복사</div>
-                    <button class="preset-btn" onclick="setSandboxPayload(&quot;' OR '1'='1&quot;)"><code>' OR '1'='1</code> (모든 계정 로그인)</button>
-                    <button class="preset-btn" onclick="setSandboxPayload(&quot;admin' --&quot;)"><code>admin' --</code> (비밀번호 우회)</button>
-                    <button class="preset-btn" onclick="setSandboxPayload(&quot;' OR 1=1 --&quot;)"><code>' OR 1=1 --</code> (주석과 참 조건)</button>
-                </div>
+                <button onclick="runSandbox()" class="btn btn-indigo">🧪 샌드박스 실행</button>
             </div>
 
-            <!-- Right Sandbox Panel -->
-            <div class="card-panel">
-                <div class="card-header">
-                    <div class="card-title">
-                        <span>👤 계정 생성 및 데이터베이스 정보</span>
-                    </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">👤 새 계정 회원가입</span>
                 </div>
-
-                <div style="margin-bottom: 24px;">
-                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 12px;">새 계정 회원가입</h4>
-                    <div class="form-group">
-                        <input type="text" id="reg-username" class="form-input" placeholder="새 아이디 (3자 이상)" style="margin-bottom: 8px;">
-                        <input type="password" id="reg-password" class="form-input" placeholder="새 비밀번호 (4자 이상)">
-                    </div>
-                    <button onclick="runRegister()" class="btn btn-success" style="width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">➕ 새 계정 등록하기</button>
-                    <div id="reg-result" class="result-box" style="margin-top: 10px;"></div>
+                <div class="form-group">
+                    <input type="text" id="reg-user" class="form-control" placeholder="새 아이디 (3자 이상)" style="margin-bottom: 8px;">
+                    <input type="password" id="reg-pass" class="form-control" placeholder="새 비밀번호 (4자 이상)">
                 </div>
-
-                <div>
-                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px;">📝 등록된 기본 샘플 계정</h4>
-                    <div id="sandbox-accounts-list" style="font-size: 0.85rem; color: var(--text-muted);">
-                        <div style="background: rgba(15,23,42,0.6); padding: 10px; border-radius: 6px; margin-bottom: 6px;">
-                            <strong style="color: var(--primary);">admin</strong> / admin123
-                        </div>
-                        <div style="background: rgba(15,23,42,0.6); padding: 10px; border-radius: 6px; margin-bottom: 6px;">
-                            <strong style="color: var(--primary);">user1</strong> / pass1234
-                        </div>
-                        <div style="background: rgba(15,23,42,0.6); padding: 10px; border-radius: 6px;">
-                            <strong style="color: var(--primary);">test</strong> / test1234
-                        </div>
-                    </div>
-                </div>
+                <button onclick="runRegister()" class="btn btn-indigo" style="background: var(--brand-emerald);">➕ 새 계정 등록하기</button>
+                <div id="reg-out" class="result-callout" style="margin-top: 12px;"></div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Step Configuration Data & Logic Script -->
     <script>
         const stepsData = {
             1: {
                 title: "1. 정상 로그인 메커니즘 이해하기",
                 subtitle: "정상적인 사용자 인증 쿼리의 동작 방식",
-                instruction: "서비스에서 사용자가 입력한 아이디와 비밀번호가 데이터베이스 조회(SELECT) 쿼리와 어떻게 결합되어 로그인 성공 여부를 판단하는지 확인합니다.",
-                concept: "💡 <strong>핵심 개념:</strong> 일반적인 로그인은 <code>WHERE username = '입력값' AND password_hash = '해시값'</code> 조건에 일치하는 회원 레코드가 존재할 때 성공합니다.",
-                badge: "실습 단계",
-                badgeClass: "badge-primary",
+                desc: "서비스에서 입력한 아이디와 비밀번호가 데이터베이스 조회(SELECT) 쿼리와 어떻게 결합되어 판단되는지 관찰합니다.",
+                concept: "💡 일반적인 로그인은 <code>WHERE username = '입력값' AND password_hash = '해시값'</code> 조건이 일치할 때 성립합니다.",
+                tag: "실습",
+                tagClass: "tag-indigo",
                 presets: [
-                    { label: "🔑 admin 계정", user: "admin", pass: "admin123" },
-                    { label: "👤 user1 계정", user: "user1", pass: "pass1234" }
+                    { label: "🔑 admin 계정", user: "admin", pass: "admin123" }
                 ],
-                formTarget: "vulnerable",
-                autoCheck: (res) => res.success
+                target: "vulnerable",
+                check: (res) => res.success
             },
             2: {
                 title: "2. 조건 우회 공격 (' OR '1'='1)",
                 subtitle: "항상 참(TRUE)이 되는 조건문 주입하기",
-                instruction: "아이디 칸에 <code>' OR '1'='1</code> 또는 <code>' OR '1'='1' --</code>을 입력하여 비밀번호 없이 시스템이 뚫리는 취약점을 직접 체감합니다.",
-                concept: "💥 <strong>공격 원리:</strong> 개발자가 쿼리를 문자열 포맷팅(f-string)으로 더할 때, 사용자가 작은따옴표를 닫고 <code>OR '1'='1</code> 조건문을 집어넣으면 인증 조건이 항상 참(True)이 됩니다.",
-                badge: "공격 실습",
-                badgeClass: "badge-danger",
+                instruction: "아이디 칸에 <code>' OR '1'='1</code>을 입력하면 조건식이 참이 되어 비밀번호 없이도 우회됩니다.",
+                concept: "💥 작은따옴표를 닫아 <code>OR '1'='1</code> 참 조건을 주입하면 전체 조건식이 항상 참이 됩니다.",
+                tag: "공격 실습",
+                tagClass: "tag-rose",
                 presets: [
                     { label: "⚡ ' OR '1'='1 (대표 페이로드)", user: "' OR '1'='1", pass: "anything" },
                     { label: "⚡ ' OR '1'='1' -- (주석 연동)", user: "' OR '1'='1' --", pass: "anything" }
                 ],
-                formTarget: "vulnerable",
-                autoCheck: (res) => res.success && res.is_vulnerable
+                target: "vulnerable",
+                check: (res) => res.success && res.is_vulnerable
             },
             3: {
                 title: "3. 주석 우회 공격 (admin' --)",
-                subtitle: "특정 계정(admin) 비밀번호 우회하기",
-                instruction: "아이디 뒤에 <code>admin' --</code>를 입력하면 <code>WHERE username = 'admin'</code> 조건만 남고 비밀번호 검사가 주석 무력화됩니다.",
-                concept: "💥 <strong>공격 원리:</strong> <code>admin' --</code>을 넣으면 <code>admin</code> 계정의 비밀번호를 몰라도 패스워드 검사를 통과하여 타인 계정을 탈취합니다.",
-                badge: "공격 실습",
-                badgeClass: "badge-danger",
+                subtitle: "특정 계정 비밀번호 우회하기",
+                desc: "아이디 뒤에 <code>admin' --</code>를 입력하면 비밀번호 검사 구문이 주석 무력화되어 계정이 탈취됩니다.",
+                concept: "💥 <code>admin' --</code>를 주입하면 뒤따라오는 패스워드 검사 구문 전체가 주석 처리되어 생략됩니다.",
+                tag: "공격 실습",
+                tagClass: "tag-rose",
                 presets: [
                     { label: "⚡ admin' -- 비밀번호 우회", user: "admin' --", pass: "wrongpassword" }
                 ],
-                formTarget: "vulnerable",
-                autoCheck: (res) => res.success && res.is_vulnerable
+                target: "vulnerable",
+                check: (res) => res.success && res.is_vulnerable
             },
             4: {
                 title: "4. 방어막 테스트 - Prepared Statement",
                 subtitle: "안전한 로그인 방식을 공격 페이로드로 검증하기",
-                instruction: "동일한 공격 페이로드(<code>' OR '1'='1</code>)를 <strong>Prepared Statement</strong>로 작성된 [안전한 로그인]에 시도해봅니다.",
-                concept: "🛡️ <strong>방어 원리:</strong> Prepared Statement는 입력값 전체를 단지 하나의 텍스트 데이터로 취급하므로 <code>' OR '1'='1</code> 이라는 아이디 이름을 가진 사용자를 찾게 되어 공격을 차단합니다.",
-                badge: "방어 검증",
-                badgeClass: "badge-success",
+                desc: "동일한 공격 페이로드를 Prepared Statement로 구현된 로그인에 시도해봅니다.",
+                concept: "🛡️ Prepared Statement는 입력값 전체를 문법이 아닌 단순 '텍스트 데이터'로 수신하므로 공격이 차단됩니다.",
+                tag: "방어 검증",
+                tagClass: "tag-emerald",
                 presets: [
                     { label: "🛡️ 안전한 방어 시도", user: "' OR '1'='1", pass: "anything" }
                 ],
-                formTarget: "secure",
-                autoCheck: (res) => !res.success
+                target: "secure",
+                check: (res) => !res.success
             },
             5: {
                 title: "5. 시큐어 코딩 소스코드 비교 분석",
                 subtitle: "취약한 코드 vs 안전한 코드의 1줄 차이 점검",
-                instruction: "우측 [백엔드 구현 소스코드 비교] 탭을 열어 <code>vulnerable_login</code>과 <code>secure_login</code> 코드를 직접 비교해보세요. 아래 이해도 점검 퀴즈를 맞히면 다음 단계로 넘어갈 수 있습니다.",
-                concept: "📝 <strong>시큐어 코딩 핵심:</strong> f-string이나 format()을 사용한 SQL 쿼리 조립을 엄금하고, 항상 <code>?</code> (파라미터 바인딩)을 사용해야 합니다.",
-                badge: "코드 분석",
-                badgeClass: "badge-primary",
-                presets: [],
+                desc: "우측 소스코드 비교 탭을 열어 차이점을 비교하고, 아래 이해도 퀴즈를 풀어보세요.",
+                concept: "📝 f-string 사용을 엄금하고 항상 <code>?</code> (파라미터 바인딩)을 사용해야 합니다.",
+                tag: "코드 분석",
+                tagClass: "tag-indigo",
                 hideForm: true,
-                formTarget: "vulnerable",
+                target: "vulnerable",
                 quiz: {
-                    question: "SQL Injection을 근본적으로 예방하기 위해 사용해야 하는 파이썬 DB API 방식은 무엇인가요?",
-                    options: [
+                    q: "SQL Injection을 근본적으로 예방하기 위해 사용해야 하는 파이썬 DB API 방식은?",
+                    opts: [
                         { text: "1. f-string 문자열 포맷팅 (f'SELECT ...')", correct: false },
                         { text: "2. Prepared Statement 파라미터 바인딩 (cursor.execute('... ?', (val,)))", correct: true },
                         { text: "3. 문자열 더하기 연산자 ('SELECT ... ' + val)", correct: false }
@@ -969,310 +746,242 @@
             6: {
                 title: "6. 최종 이해도 검증 및 수료 인증",
                 subtitle: "학습한 모든 보안 개념 최종 정리",
-                instruction: "모든 실습과 코드 분석 단계를 완료하셨습니다! 아래 종합 검증 퀴즈를 풀고 수료를 완료하세요.",
-                concept: "🎉 축하합니다! 취약한 쿼리와 시큐어 코딩(Prepared Statement)의 차이점 및 방어 메커니즘 습득을 완수하셨습니다.",
-                badge: "최종 수료",
-                badgeClass: "badge-success",
-                presets: [],
+                desc: "모든 실습을 완수하셨습니다! 아래 종합 검증 퀴즈를 풀고 수료를 마무리하세요.",
+                concept: "🎉 축하합니다! Prepared Statement 시큐어 코딩 메커니즘을 습득하셨습니다.",
+                tag: "최종 수료",
+                tagClass: "tag-emerald",
                 hideForm: true,
-                formTarget: "secure",
+                target: "secure",
                 quiz: {
-                    question: "Prepared Statement가 SQL Injection 공격을 차단할 수 있는 주된 이유는 무엇인가요?",
-                    options: [
-                        { text: "1. 사용자 입력값의 길이를 10자 이내로 자동 제한하기 때문에", correct: false },
-                        { text: "2. 특수 문자가 입력되더라도 SQL 구문으로 해석하지 않고 단순 데이터로 취급하기 때문에", correct: true },
+                    q: "Prepared Statement가 SQL Injection 공격을 차단할 수 있는 주된 이유는?",
+                    opts: [
+                        { text: "1. 입력값 길이를 자동 제한하기 때문에", correct: false },
+                        { text: "2. 입력값을 SQL 구문으로 해석하지 않고 단순 데이터로 취급하기 때문에", correct: true },
                         { text: "3. 비밀번호를 백엔드에서 암호화하기 때문에", correct: false }
                     ]
                 }
             }
         };
 
-        let currentStep = 1;
-        let completedSteps = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
+        let currStep = 1;
+        let completed = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderStep(1);
-        });
-
-        function switchMode(mode) {
-            document.getElementById('btn-mode-tutorial').classList.toggle('active', mode === 'tutorial');
-            document.getElementById('btn-mode-sandbox').classList.toggle('active', mode === 'sandbox');
-            document.getElementById('tutorial-view').style.display = mode === 'tutorial' ? 'block' : 'none';
-            document.getElementById('sandbox-view').style.display = mode === 'sandbox' ? 'grid' : 'none';
+        function switchMode(m) {
+            document.getElementById('btn-mode-tutorial').classList.toggle('active', m === 'tutorial');
+            document.getElementById('btn-mode-sandbox').classList.toggle('active', m === 'sandbox');
+            document.getElementById('tutorial-view').style.display = m === 'tutorial' ? 'block' : 'none';
+            document.getElementById('sandbox-view').style.display = m === 'sandbox' ? 'grid' : 'none';
         }
 
-        function renderStep(stepNum) {
-            currentStep = stepNum;
-            const data = stepsData[stepNum];
+        function jumpStep(n) {
+            if (n > currStep && !completed[currStep] && currStep < 5) {
+                if (!confirm(`⚠️ 현 단계(Step ${currStep}) 실습을 마치지 않으셨습니다. 다음 단계로 건너뛰시겠습니까?`)) return;
+            }
 
-            const percent = (stepNum / 6) * 100;
-            document.getElementById('progress-bar').style.width = `${percent}%`;
-            document.getElementById('progress-text').textContent = `${percent.toFixed(1)}% 완료`;
-            document.getElementById('step-badge-text').textContent = `Step ${stepNum} / 6`;
+            currStep = n;
+            const data = stepsData[n];
+
+            const pct = (n / 6) * 100;
+            document.getElementById('progress-fill').style.width = `${pct}%`;
+            document.getElementById('progress-percent').textContent = `${pct.toFixed(1)}%`;
+            document.getElementById('step-badge').textContent = `Step ${n} / 6`;
 
             for (let i = 1; i <= 6; i++) {
-                const pill = document.getElementById(`pill-${i}`);
-                pill.classList.toggle('active', i === stepNum);
+                document.getElementById(`pill-${i}`).classList.toggle('active', i === n);
             }
 
             document.getElementById('step-title').textContent = data.title;
             document.getElementById('step-subtitle').textContent = data.subtitle;
-            document.getElementById('step-instruction').innerHTML = data.instruction;
+            document.getElementById('step-desc').innerHTML = data.desc;
             document.getElementById('step-concept').innerHTML = data.concept;
 
-            const badge = document.getElementById('step-type-badge');
-            badge.textContent = data.badge;
-            badge.className = `badge ${data.badgeClass}`;
+            const tag = document.getElementById('step-tag');
+            tag.textContent = data.tag;
+            tag.className = `tag ${data.tagClass}`;
 
-            const presetBox = document.getElementById('preset-container');
+            const presetArea = document.getElementById('preset-area');
+            const presetBtns = document.getElementById('preset-buttons');
             if (data.presets && data.presets.length > 0) {
-                presetBox.style.display = 'block';
-                let html = '<div class="preset-title">⚡ 빠른 테스트 입력 세팅</div>';
+                presetArea.style.display = 'block';
+                let html = '';
                 data.presets.forEach(p => {
-                    html += `<button type="button" class="preset-btn" onclick="applyPreset('${escapeHtml(p.user)}', '${escapeHtml(p.pass)}')">${p.label}</button>`;
+                    html += `<button type="button" class="preset-chip" onclick="setPreset('${p.user}', '${p.pass}')">${p.label}</button>`;
                 });
-                presetBox.innerHTML = html;
+                presetBtns.innerHTML = html;
             } else {
-                presetBox.style.display = 'none';
+                presetArea.style.display = 'none';
             }
 
-            const stepForm = document.getElementById('step-form');
-            if (data.hideForm) {
-                stepForm.style.display = 'none';
-            } else {
-                stepForm.style.display = 'block';
-            }
+            document.getElementById('step-form').style.display = data.hideForm ? 'none' : 'block';
+            document.getElementById('input-user').value = '';
+            document.getElementById('input-pass').value = '';
 
-            document.getElementById('input-username').value = '';
-            document.getElementById('input-password').value = '';
-
-            document.getElementById('btn-prev-step').disabled = (stepNum === 1);
-            document.getElementById('btn-next-step').textContent = (stepNum === 6) ? '🎓 학습 완료!' : '다음 단계 →';
-
-            const quizContainer = document.getElementById('quiz-container');
+            const quizArea = document.getElementById('quiz-area');
             if (data.quiz) {
-                quizContainer.style.display = 'block';
-                document.getElementById('quiz-question').textContent = data.quiz.question;
-                let qHtml = '';
-                data.quiz.options.forEach((opt, idx) => {
-                    qHtml += `<div class="quiz-option" onclick="checkQuizAnswer(${idx}, ${opt.correct})">${opt.text}</div>`;
+                quizArea.style.display = 'block';
+                document.getElementById('quiz-question').textContent = data.quiz.q;
+                let html = '';
+                data.quiz.opts.forEach((o, idx) => {
+                    html += `<div class="quiz-opt" onclick="checkQuiz(${idx}, ${o.correct})">${o.text}</div>`;
                 });
-                document.getElementById('quiz-options').innerHTML = qHtml;
+                document.getElementById('quiz-options').innerHTML = html;
                 document.getElementById('quiz-feedback').style.display = 'none';
             } else {
-                quizContainer.style.display = 'none';
+                quizArea.style.display = 'none';
             }
 
-            const modeTag = document.getElementById('query-mode-tag');
-            if (data.formTarget === 'secure') {
+            const modeTag = document.getElementById('mode-tag');
+            if (data.target === 'secure') {
                 modeTag.textContent = 'Secure Mode (Prepared Statement)';
-                modeTag.style.color = 'var(--accent-emerald)';
+                modeTag.className = 'tag tag-emerald';
                 switchCodeTab('secure');
             } else {
-                modeTag.textContent = 'Vulnerable Mode (String Formatting)';
-                modeTag.style.color = 'var(--accent-rose)';
+                modeTag.textContent = 'Vulnerable Mode (f-string)';
+                modeTag.className = 'tag tag-rose';
                 switchCodeTab('vulnerable');
             }
+
+            document.getElementById('btn-prev').disabled = (n === 1);
+            document.getElementById('btn-next').textContent = (n === 6) ? '🎓 완수' : '다음 단계 →';
         }
 
-        function applyPreset(user, pass) {
-            document.getElementById('input-username').value = user;
-            document.getElementById('input-password').value = pass;
+        function setPreset(u, p) {
+            document.getElementById('input-user').value = u;
+            document.getElementById('input-pass').value = p;
         }
 
-        function escapeHtml(text) {
-            return text.replace(/'/g, "\\'");
-        }
-
-        async function handleStepSubmit(e) {
+        async function handleFormSubmit(e) {
             e.preventDefault();
-            const username = document.getElementById('input-username').value.trim();
-            const password = document.getElementById('input-password').value;
-            const data = stepsData[currentStep];
+            const u = document.getElementById('input-user').value.trim();
+            const p = document.getElementById('input-pass').value;
+            const data = stepsData[currStep];
 
-            if (!username) {
-                alert('⚠️ 아이디를 입력해주세요!\n입력이 귀찮으시다면 아래의 [⚡ 빠른 테스트 입력 세팅] 버튼을 클릭해보세요.');
+            if (!u) {
+                alert('아이디를 입력해주세요!');
                 return;
             }
 
-            const endpoint = (data.formTarget === 'secure') ? '/api/secure-login' : '/api/vulnerable-login';
-            document.getElementById('status-badge').textContent = '쿼리 실행 중...';
+            const ep = (data.target === 'secure') ? '/api/secure-login' : '/api/vulnerable-login';
+            document.getElementById('status-text').textContent = 'Executing...';
 
             try {
-                const response = await fetch(endpoint, {
+                const res = await fetch(ep, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ username: u, password: p })
                 });
+                const result = await res.json();
+                renderResult(result, data.target);
 
-                const result = await response.json();
-                renderQueryResult(result, data.formTarget);
-
-                completedSteps[currentStep] = true;
-                const pill = document.getElementById(`pill-${currentStep}`);
-                if (pill) {
+                completed[currStep] = true;
+                const pill = document.getElementById(`pill-${currStep}`);
+                if (pill && !pill.textContent.includes('✓')) {
                     pill.classList.add('completed');
-                    if (!pill.textContent.includes('✓')) {
-                        pill.textContent = '✓ ' + pill.textContent;
-                    }
+                    pill.textContent = '✓ ' + pill.textContent;
                 }
             } catch (err) {
-                alert(`오류 발생: ${err.message}`);
+                alert('오류: ' + err.message);
             } finally {
-                document.getElementById('status-badge').textContent = '실행 완료';
+                document.getElementById('status-text').textContent = 'Done';
             }
         }
 
-        function renderQueryResult(res, formTarget) {
-            const queryDisplay = document.getElementById('query-code-display');
-            const resultDisplay = document.getElementById('result-display');
-            const resultTitle = document.getElementById('result-title');
-            const resultBody = document.getElementById('result-body');
+        function renderResult(res, target) {
+            const out = document.getElementById('query-output');
+            const callout = document.getElementById('result-callout');
+            const head = document.getElementById('result-head');
+            const detail = document.getElementById('result-detail');
 
-            let formattedQuery = res.query || '';
-            if (formattedQuery) {
-                formattedQuery = formattedQuery
-                    .replace(/(SELECT|FROM|WHERE|AND|OR)/g, '<span class="sql-kw">$1</span>')
-                    .replace(/('.*?')/g, '<span class="sql-str">$1</span>');
-            } else {
-                formattedQuery = '-- 실행된 쿼리 정보가 없습니다.';
-            }
+            let q = res.query || '-- 쿼리가 없습니다.';
+            q = q.replace(/(SELECT|FROM|WHERE|AND|OR)/g, '<span class="kw">$1</span>').replace(/('.*?')/g, '<span class="str">$1</span>');
+            out.innerHTML = q;
 
-            queryDisplay.innerHTML = formattedQuery;
-
-            resultDisplay.className = 'result-box show';
+            callout.className = 'result-callout show';
             if (res.success) {
-                if (res.is_vulnerable && (currentStep === 2 || currentStep === 3)) {
-                    resultDisplay.className = 'result-box show vulnerable-success';
-                    resultTitle.innerHTML = '🚨 [취약점 발생! 시스템 뚫림] ' + res.message;
-                    resultBody.innerHTML = '💥 <strong>위험!</strong> 비밀번호를 모르는데도 계정에 로그인되었습니다!<br>' + 
-                        '사용자가 입력한 특수문자(<code>\' OR \'1\'=\'1</code> 또는 <code>--</code>)가 SQL 명령어로 해석되어 쿼리 검사문이 무력화된 심각한 보안 버그(SQL Injection) 상태입니다.';
+                if (res.is_vulnerable && (currStep === 2 || currStep === 3)) {
+                    callout.className = 'result-callout show alert-danger';
+                    head.innerHTML = '🚨 [취약점 발생! 시스템 뚫림] ' + res.message;
+                    detail.innerHTML = '💥 비밀번호 없이 계정에 로그인되었습니다! 사용자가 주입한 페이로드가 SQL 문법으로 해석되었습니다.';
                 } else {
-                    resultDisplay.className = 'result-box show success';
-                    resultTitle.innerHTML = '✅ [로그인 성공] ' + res.message;
-                    resultBody.innerHTML = '정상적인 아이디와 비밀번호로 데이터베이스 검증을 통과하였습니다.';
+                    callout.className = 'result-callout show alert-success';
+                    head.innerHTML = '✅ [로그인 성공] ' + res.message;
+                    detail.innerHTML = '정상적인 인증 정보를 통과했습니다.';
                 }
             } else {
-                if (formTarget === 'secure' && currentStep === 4) {
-                    resultDisplay.className = 'result-box show success';
-                    resultTitle.innerHTML = '🛡️ [보안 방어 성공! 공격 차단됨] 로그인 실패';
-                    resultBody.innerHTML = '✨ <strong>완벽한 방어!</strong> 동일한 공격 페이로드를 주입했지만, Prepared Statement가 입력값 전체를 문법이 아닌 <em>단순 텍스트 데이터</em>로 처리하여 시스템이 뚫리지 않고 안전하게 차단했습니다!';
+                if (target === 'secure' && currStep === 4) {
+                    callout.className = 'result-callout show alert-success';
+                    head.innerHTML = '🛡️ [보안 방어 성공! 차단됨] 로그인 실패';
+                    detail.innerHTML = '✨ Prepared Statement가 입력값 전체를 단순 텍스트로 처리하여 쿼리 조작을 차단했습니다!';
                 } else {
-                    resultDisplay.className = 'result-box show error';
-                    resultTitle.innerHTML = '❌ [로그인 실패] ' + res.message;
-                    resultBody.innerHTML = '아이디 또는 비밀번호가 일치하지 않습니다.';
+                    callout.className = 'result-callout show alert-muted';
+                    head.innerHTML = '❌ [로그인 실패] ' + res.message;
+                    detail.innerHTML = '아이디 또는 비밀번호가 일치하지 않습니다.';
                 }
             }
         }
 
-        function switchCodeTab(tab) {
-            const tabs = document.querySelectorAll('.code-tab');
-            tabs[0].classList.toggle('active', tab === 'vulnerable');
-            tabs[1].classList.toggle('active', tab === 'secure');
+        function switchCodeTab(t) {
+            const btns = document.querySelectorAll('.tab-btn');
+            btns[0].classList.toggle('active', t === 'vulnerable');
+            btns[1].classList.toggle('active', t === 'secure');
 
-            document.getElementById('code-vulnerable').classList.toggle('active', tab === 'vulnerable');
-            document.getElementById('code-secure').classList.toggle('active', tab === 'secure');
+            document.getElementById('code-vulnerable').classList.toggle('active', t === 'vulnerable');
+            document.getElementById('code-secure').classList.toggle('active', t === 'secure');
+        }
+
+        function checkQuiz(idx, correct) {
+            const opts = document.querySelectorAll('.quiz-opt');
+            opts.forEach(o => o.classList.remove('correct', 'wrong'));
+            const fb = document.getElementById('quiz-feedback');
+            fb.style.display = 'block';
+
+            if (correct) {
+                opts[idx].classList.add('correct');
+                fb.style.color = '#6ee7b7';
+                fb.innerHTML = '✨ 정답입니다! Prepared Statement는 파라미터를 단순 데이터로 수신하므로 SQL Injection을 근본 차단합니다.';
+                completed[currStep] = true;
+                const pill = document.getElementById(`pill-${currStep}`);
+                if (pill && !pill.textContent.includes('✓')) {
+                    pill.classList.add('completed');
+                    pill.textContent = '✓ ' + pill.textContent;
+                }
+            } else {
+                opts[idx].classList.add('wrong');
+                fb.style.color = '#fda4af';
+                fb.innerHTML = '❌ 다시 생각해보세요. 준비된 쿼리의 핵심은 코드와 데이터의 분리입니다.';
+            }
         }
 
         function nextStep() {
-            if (currentStep < 5 && !completedSteps[currentStep]) {
-                const confirmSkip = confirm(`⚠️ [Step ${currentStep}] 단계의 실습을 아직 완료하지 않으셨습니다.\n아이디/비밀번호를 입력하고 [▶️ 실행 및 로그인 테스트] 버튼을 누르거나 '빠른 테스트 입력 세팅'을 활용하세요!\n\n그래도 다음 단계로 건너뛰시겠습니까?`);
-                if (!confirmSkip) return;
-            }
-
-            if (currentStep < 6) {
-                renderStep(currentStep + 1);
-            } else {
-                alert('🎉 모든 학습 과정을 완료하셨습니다!');
-            }
+            if (currStep < 6) jumpStep(currStep + 1);
+            else alert('🎉 SQL Injection 시큐어 코딩 모듈을 완수하셨습니다!');
         }
 
         function prevStep() {
-            if (currentStep > 1) {
-                renderStep(currentStep - 1);
-            }
+            if (currStep > 1) jumpStep(currStep - 1);
         }
 
-        function jumpToStep(num) {
-            if (num > currentStep && !completedSteps[currentStep]) {
-                const confirmSkip = confirm(`⚠️ 현 단계(Step ${currentStep}) 실습을 완료하지 않았습니다.\n아이디/비밀번호 입력 및 테스트를 거쳐야 깊이 있게 이해하실 수 있습니다.\n\n해당 단계(Step ${num})로 건너뛰시겠습니까?`);
-                if (!confirmSkip) return;
-            }
-            renderStep(num);
-        }
-
-        function checkQuizAnswer(idx, isCorrect) {
-            const options = document.querySelectorAll('.quiz-option');
-            options.forEach(opt => opt.classList.remove('correct', 'wrong'));
-            const feedback = document.getElementById('quiz-feedback');
-            feedback.style.display = 'block';
-
-            if (isCorrect) {
-                options[idx].classList.add('correct');
-                feedback.style.color = '#34d399';
-                feedback.innerHTML = '✨ 정답입니다! Prepared Statement는 파라미터를 단순 데이터로만 수신하므로 SQL Injection이 원천 차단됩니다.';
-                completedSteps[currentStep] = true;
-                const pill = document.getElementById(`pill-${currentStep}`);
-                if (pill) {
-                    pill.classList.add('completed');
-                    if (!pill.textContent.includes('✓')) {
-                        pill.textContent = '✓ ' + pill.textContent;
-                    }
-                }
-            } else {
-                options[idx].classList.add('wrong');
-                feedback.style.color = '#fb7185';
-                feedback.innerHTML = '❌ 다시 생각해보세요. 준비된 쿼리(Prepared Statement)의 핵심은 코드와 데이터의 분리입니다.';
-            }
-        }
-
-        async function runSandboxLogin() {
-            const mode = document.getElementById('sandbox-mode-select').value;
-            const username = document.getElementById('sandbox-username').value;
-            const password = document.getElementById('sandbox-password').value;
-
-            const endpoint = (mode === 'secure') ? '/api/secure-login' : '/api/vulnerable-login';
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                const result = await response.json();
-                alert(`결과: ${result.message}\n실행된 쿼리: ${result.query}`);
-            } catch (e) {
-                alert('오류 발생: ' + e.message);
-            }
-        }
-
-        function setSandboxPayload(payload) {
-            document.getElementById('sandbox-username').value = payload;
-            document.getElementById('sandbox-password').value = 'anything';
+        async function runSandbox() {
+            const mode = document.getElementById('sandbox-mode').value;
+            const u = document.getElementById('sandbox-user').value;
+            const p = document.getElementById('sandbox-pass').value;
+            const ep = (mode === 'secure') ? '/api/secure-login' : '/api/vulnerable-login';
+            const res = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
+            const data = await res.json();
+            alert(`결과: ${data.message}\n쿼리: ${data.query}`);
         }
 
         async function runRegister() {
-            const username = document.getElementById('reg-username').value.trim();
-            const password = document.getElementById('reg-password').value.trim();
-            const resBox = document.getElementById('reg-result');
-
-            if (!username || !password) {
-                alert('아이디와 비밀번호를 모두 입력하세요');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                const res = await response.json();
-                resBox.className = `result-box show ${res.success ? 'success' : 'error'}`;
-                resBox.textContent = res.message;
-            } catch (e) {
-                alert('등록 오류: ' + e.message);
-            }
+            const u = document.getElementById('reg-user').value.trim();
+            const p = document.getElementById('reg-pass').value.trim();
+            const out = document.getElementById('reg-out');
+            const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
+            const data = await res.json();
+            out.className = `result-callout show ${data.success ? 'alert-success' : 'alert-danger'}`;
+            out.textContent = data.message;
         }
+
+        jumpStep(1);
     </script>
 </body>
 </html>
