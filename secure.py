@@ -410,6 +410,129 @@ def api_test_accounts():
     })
 
 # =================================================================
+# 6️⃣ 추가 모듈 백엔드 API (XSS, CSRF, IDOR/Auth)
+# =================================================================
+
+import html
+
+@app.route('/api/vulnerable-xss', methods=['POST'])
+def api_vulnerable_xss():
+    """XSS 취약점 백엔드 API (HTML Escape 미적용)"""
+    data = request.json or {}
+    content = data.get('content', '')
+    is_vuln = ('<script>' in content.lower()) or ('onerror=' in content.lower()) or ('javascript:' in content.lower())
+    
+    return jsonify({
+        'success': True,
+        'mode': 'vulnerable',
+        'raw_html': f"<div>검색어: {content}</div>",
+        'is_vulnerable': is_vuln,
+        'message': '🚨 [Reflected XSS 취약] 입력값이 검증 및 이스케이프 없이 브라우저 DOM에 그대로 출력되었습니다!' if is_vuln else '정상 입력값이 렌더링되었습니다.'
+    })
+
+@app.route('/api/secure-xss', methods=['POST'])
+def api_secure_xss():
+    """XSS 시큐어 코딩 API (HTML Entity Escape 적용)"""
+    data = request.json or {}
+    content = data.get('content', '')
+    escaped_content = html.escape(content)
+    
+    return jsonify({
+        'success': True,
+        'mode': 'secure',
+        'escaped_html': f"<div>검색어: {escaped_content}</div>",
+        'is_vulnerable': False,
+        'message': '🛡️ [HTML Escape 방어 성공] 특수문자(<, >, &)가 안전한 HTML Entity로 변환되어 스크립트 실행이 완전 차단되었습니다!'
+    })
+
+@app.route('/api/vulnerable-transfer', methods=['POST'])
+def api_vulnerable_transfer():
+    """CSRF 취약점 송금 API (CSRF 토큰 미검증)"""
+    data = request.json or {}
+    recipient = data.get('recipient', '')
+    amount = data.get('amount', 0)
+    
+    return jsonify({
+        'success': True,
+        'mode': 'vulnerable',
+        'is_csrf_vulnerable': True,
+        'message': f"🚨 [CSRF 공격 성공] CSRF 검증 토큰이 없어 타 사이트에서 위조된 송금 요청(수금자: {recipient}, 금액: {amount}원)이 승인되었습니다!"
+    })
+
+@app.route('/api/secure-transfer', methods=['POST'])
+def api_secure_transfer():
+    """CSRF 시큐어 코딩 송금 API (Anti-CSRF Token 검증)"""
+    data = request.json or {}
+    csrf_token = request.headers.get('X-CSRF-Token') or data.get('csrf_token')
+    recipient = data.get('recipient', '')
+    amount = data.get('amount', 0)
+    
+    if not csrf_token or csrf_token != 'VALID_SECURITY_TOKEN_123':
+        return jsonify({
+            'success': False,
+            'mode': 'secure',
+            'is_csrf_vulnerable': False,
+            'error': '403 Forbidden',
+            'message': '🛡️ [Anti-CSRF 방어 성공] 유효한 CSRF 토큰(X-CSRF-Token)이 포함되지 않아 위조된 송금 요청이 거절되었습니다!'
+        }), 403
+        
+    return jsonify({
+        'success': True,
+        'mode': 'secure',
+        'message': f"✅ [정상 송금 완료] 검증된 Anti-CSRF 토큰으로 {recipient} 님에게 {amount}원이 정상 처리되었습니다."
+    })
+
+@app.route('/api/vulnerable-profile/<int:user_id>', methods=['GET'])
+def api_vulnerable_profile(user_id):
+    """IDOR 취약점 프로필 조회 API (세션 사용자 검증 누락)"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, username, created_at FROM users WHERE id = ?", (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    if not row:
+        return jsonify({'success': False, 'message': '존재하지 않는 회원입니다.'}), 404
+        
+    return jsonify({
+        'success': True,
+        'mode': 'vulnerable',
+        'is_idor_vulnerable': user_id != 101,
+        'profile': {
+            'user_id': row[0],
+            'username': row[1],
+            'ssn': f"900{row[0]}1-1******",
+            'phone': f"010-1234-{row[0]:04d}",
+            'address': "서울특별시 강남구 테헤란로 123"
+        },
+        'warning': f"🚨 [IDOR 취약점 발생] 현재 로그인된 세션(101) 검증 없이 URL/파라미터의 user_id={user_id} 조작만으로 타인의 개인정보를 탈취했습니다!" if user_id != 101 else "본인 프로필 정보입니다."
+    })
+
+@app.route('/api/secure-profile/<int:user_id>', methods=['GET'])
+def api_secure_profile(user_id):
+    """IDOR 시큐어 코딩 프로필 조회 API (세션 사용자 권한 인가 검증)"""
+    current_session_user_id = 101
+    
+    if user_id != current_session_user_id:
+        return jsonify({
+            'success': False,
+            'mode': 'secure',
+            'error': '403 Forbidden',
+            'message': f"🛡️ [보안 인가 검증 성공] 로그인한 세션 사용자({current_session_user_id})와 요청한 자원의 소유자({user_id})가 일치하지 않아 접근이 차단되었습니다!"
+        }), 403
+        
+    return jsonify({
+        'success': True,
+        'mode': 'secure',
+        'profile': {
+            'user_id': 101,
+            'username': 'admin',
+            'email': 'admin@example.com'
+        },
+        'message': "✅ [정상 본인 프로필 조회] 세션 인가 검증을 정상 통과했습니다."
+    })
+
+# =================================================================
 # 🚀 프로그램 시작 지점
 # =================================================================
 

@@ -67,19 +67,19 @@
         <div class="workspace">
             <div class="panel">
                 <h3 id="step-title" style="font-size: 1rem; color: var(--text-heading); margin-bottom: 8px;">1. 본인 회원 정보 조회</h3>
-                <p id="step-desc" style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 16px;">로그인 사용자(user_id=101)가 본인의 마이페이지 프로필을 조회합니다.</p>
+                <p id="step-desc" style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 16px;">로그인 사용자(user_id=1)가 백엔드 DB 프로필 API를 호출합니다.</p>
 
                 <form id="auth-form" onsubmit="handleAuth(event)">
                     <div style="margin-bottom: 14px;">
                         <label style="display: block; font-size: 0.825rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">회원 번호 (user_id)</label>
-                        <input type="number" id="userid-input" class="form-control" value="101" required>
+                        <input type="number" id="userid-input" class="form-control" value="1" required>
                     </div>
-                    <button type="submit" class="btn btn-emerald">🔍 API 프로필 조회 호출</button>
+                    <button type="submit" class="btn btn-emerald">🔍 실제 백엔드 프로필 API 호출</button>
                 </form>
             </div>
 
             <div class="panel">
-                <h4 style="font-size: 0.95rem; color: var(--text-heading); margin-bottom: 12px;">📊 API 응답 데이터 (JSON Response)</h4>
+                <h4 style="font-size: 0.95rem; color: var(--text-heading); margin-bottom: 12px;">📊 백엔드 API 응답 (SQLite & Session)</h4>
                 <div style="background: #0f172a; padding: 14px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #e2e8f0; min-height: 140px;" id="auth-res">
 {
   "status": "ready"
@@ -97,21 +97,29 @@
             document.getElementById('progress-percent').textContent = `${n * 20}%`;
             document.getElementById('progress-fill').style.width = `${n * 20}%`;
             for (let i = 1; i <= 5; i++) document.getElementById(`pill-${i}`).classList.toggle('active', i === n);
+
+            if (n === 2) document.getElementById('userid-input').value = "2";
+            else if (n === 3) document.getElementById('userid-input').value = "2";
         }
 
-        function handleAuth(e) {
+        async function handleAuth(e) {
             e.preventDefault();
             const idVal = document.getElementById('userid-input').value;
             const res = document.getElementById('auth-res');
 
-            if (currStep === 2 && idVal !== "101") {
-                res.innerHTML = `{<br>  "status": 200,<br>  "is_idor_vulnerable": true,<br>  "user_id": ${idVal},<br>  "username": "victim_${idVal}",<br>  "ssn": "900101-1******",<br>  "warning": "🚨 [IDOR 발생] 로그인한 사용자(101)가 파라미터 숫자 변조로 타인(${idVal})의 민감정보를 무단 조회했습니다!"<br>}`;
-            } else if (currStep === 3) {
-                res.innerHTML = `{<br>  "status": 403,<br>  "error": "Access Denied",<br>  "message": "🛡️ [보안 인가 검증 성공] 세션에 등록된 본인 식별자만 접근이 허용되었습니다!"<br>}`;
-            } else {
-                res.innerHTML = `{<br>  "status": 200,<br>  "user_id": ${idVal},<br>  "email": "user101@example.com"<br>}`;
+            const ep = (currStep === 3) ? `/api/secure-profile/${idVal}` : `/api/vulnerable-profile/${idVal}`;
+            try {
+                const response = await fetch(ep);
+                const data = await response.json();
+                res.innerHTML = JSON.stringify(data, null, 2).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;');
+                alert(data.message || data.warning || '조회 완료');
+            } catch (err) {
+                alert('API 오류: ' + err.message);
             }
         }
+
+        function nextStep() { if (currStep < 5) jumpStep(currStep + 1); else alert('🎉 IDOR 모듈 완수!'); }
+        function prevStep() { if (currStep > 1) jumpStep(currStep - 1); }
     </script>
 </body>
 </html>

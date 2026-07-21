@@ -69,14 +69,14 @@
         <div class="workspace">
             <div class="panel">
                 <h3 id="step-title" style="font-size: 1rem; color: var(--text-heading); margin-bottom: 8px;">1. 정상 사용자 입력 렌더링</h3>
-                <p id="step-desc" style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 16px;">검색창에 입력한 텍스트가 화면에 렌더링되는 과정을 관찰합니다.</p>
+                <p id="step-desc" style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 16px;">검색창에 입력한 텍스트가 백엔드 API를 거쳐 화면에 렌더링되는 과정을 관찰합니다.</p>
 
                 <form id="xss-form" onsubmit="handleXSS(event)">
                     <div style="margin-bottom: 14px;">
                         <label style="display: block; font-size: 0.825rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">입력값 (Input Payload)</label>
                         <input type="text" id="xss-input" class="form-control" value="안녕하세요! 시큐어 코딩 학습입니다." required>
                     </div>
-                    <button type="submit" class="btn btn-sky">▶️ 렌더링 시뮬레이션 실행</button>
+                    <button type="submit" class="btn btn-sky">▶️ 실시간 백엔드 API 호스트 렌더링 실행</button>
                 </form>
 
                 <div style="display: flex; gap: 10px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
@@ -86,7 +86,7 @@
             </div>
 
             <div class="panel">
-                <h4 style="font-size: 0.95rem; color: var(--text-heading); margin-bottom: 12px;">🖥️ DOM 렌더링 출력 결과</h4>
+                <h4 style="font-size: 0.95rem; color: var(--text-heading); margin-bottom: 12px;">🖥️ 백엔드 API 응답 및 DOM 출력</h4>
                 <div style="background: #0f172a; padding: 14px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #e2e8f0;" id="dom-out">
 -- 실행 결과가 여기에 표시됩니다.
                 </div>
@@ -105,25 +105,38 @@
             document.getElementById('progress-percent').textContent = `${n * 20}%`;
             document.getElementById('progress-fill').style.width = `${n * 20}%`;
             for (let i = 1; i <= 5; i++) document.getElementById(`pill-${i}`).classList.toggle('active', i === n);
+
+            if (n === 2) document.getElementById('xss-input').value = "<script>alert('🚨 XSS 공격 성공!')<\/script>";
+            else if (n === 3) document.getElementById('xss-input').value = "<img src=x onerror=\"alert('🚨 XSS 발생! 쿠키 탈취: session_id=ABC123')\">";
+            else if (n === 4) document.getElementById('xss-input').value = "<script>alert('XSS 공격!')<\/script>";
         }
 
-        function handleXSS(e) {
+        async function handleXSS(e) {
             e.preventDefault();
             const val = document.getElementById('xss-input').value;
             const domOut = document.getElementById('dom-out');
             const renderWin = document.getElementById('render-win');
 
-            if (currStep === 4) {
-                const escaped = val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                domOut.textContent = `<div>검색: ${escaped}</div>`;
-                renderWin.innerText = `검색: ${val}`;
-                alert('🛡️ [HTML Escape 성공] 특수문자가 안전하게 치환되어 스크립트 실행이 차단되었습니다!');
-            } else {
-                domOut.textContent = `<div>검색: ${val}</div>`;
-                renderWin.innerHTML = `<div>검색: ${val}</div>`;
-                if (val.includes('<script>') || val.includes('onerror=')) {
-                    alert('🚨 [XSS 발생] 악성 스크립트가 실행되었습니다!');
+            const ep = (currStep === 4) ? '/api/secure-xss' : '/api/vulnerable-xss';
+            try {
+                const res = await fetch(ep, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: val })
+                });
+                const data = await res.json();
+                
+                if (data.mode === 'secure') {
+                    domOut.textContent = `[Backend API Response]: ${data.escaped_html}`;
+                    renderWin.innerText = `검색 결과: ${val}`;
+                } else {
+                    domOut.textContent = `[Backend API Response]: ${data.raw_html}`;
+                    renderWin.innerHTML = `<div>검색 결과: ${val}</div>`;
                 }
+
+                alert(data.message);
+            } catch (err) {
+                alert('API 호출 오류: ' + err.message);
             }
         }
 
