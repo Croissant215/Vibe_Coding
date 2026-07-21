@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" class="dark">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,24 +10,27 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-canvas: #090d14;
-            --bg-surface: #111726;
-            --bg-surface-hover: #182238;
-            --bg-elevated: #1e293b;
+            --bg-canvas: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-surface-hover: #f1f5f9;
+            --bg-elevated: #f8fafc;
             
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --border-medium: rgba(255, 255, 255, 0.14);
+            --border-subtle: #e2e8f0;
+            --border-medium: #cbd5e1;
             
-            --brand-primary: #6366f1;
-            --brand-primary-hover: #4f46e5;
+            --brand-primary: #4f46e5;
+            --brand-primary-hover: #4338ca;
             --brand-sky: #0284c7;
-            --brand-emerald: #10b981;
-            --brand-rose: #f43f5e;
+            --brand-emerald: #059669;
+            --brand-rose: #e11d48;
             
-            --text-heading: #f8fafc;
-            --text-body: #cbd5e1;
-            --text-muted: #94a3b8;
-            --text-dim: #64748b;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,7 +38,7 @@
         body {
             background-color: var(--bg-canvas);
             color: var(--text-body);
-            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
@@ -47,10 +50,10 @@
             padding: 0 24px;
         }
 
-        /* Navbar Header */
+        /* Navbar */
         header {
             border-bottom: 1px solid var(--border-subtle);
-            background: rgba(9, 13, 20, 0.85);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             position: sticky;
             top: 0;
@@ -76,24 +79,18 @@
             gap: 6px;
             padding: 6px 12px;
             border-radius: 6px;
-            background: rgba(255, 255, 255, 0.04);
+            background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
             color: var(--text-muted);
             text-decoration: none;
             font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.15s ease;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
         }
 
         .back-link:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--bg-surface-hover);
             color: var(--text-heading);
-        }
-
-        .page-title-wrap {
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .page-title {
@@ -104,7 +101,7 @@
 
         .mode-toggle {
             display: flex;
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(15, 23, 42, 0.04);
             padding: 3px;
             border-radius: 8px;
             border: 1px solid var(--border-subtle);
@@ -119,33 +116,34 @@
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.15s ease;
         }
 
         .mode-btn.active {
-            background: var(--brand-primary);
-            color: white;
+            background: var(--bg-surface);
+            color: var(--brand-primary);
+            box-shadow: var(--shadow-sm);
         }
 
-        /* Timeline Progress Card */
+        /* Progress Bar Card */
         .timeline-card {
             background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
             border-radius: 12px;
             padding: 20px 24px;
             margin: 24px 0;
+            box-shadow: var(--shadow-sm);
         }
 
         .timeline-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .progress-bar-bg {
             height: 6px;
-            background: rgba(255, 255, 255, 0.06);
+            background: #e2e8f0;
             border-radius: 999px;
             overflow: hidden;
             margin-bottom: 16px;
@@ -170,26 +168,25 @@
             min-width: 140px;
             padding: 8px 12px;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.02);
+            background: var(--bg-canvas);
             border: 1px solid var(--border-subtle);
             color: var(--text-muted);
             font-size: 0.8rem;
             font-weight: 500;
             cursor: pointer;
             text-align: center;
-            transition: all 0.15s ease;
             white-space: nowrap;
         }
 
         .step-item.active {
-            background: rgba(99, 102, 241, 0.12);
+            background: rgba(79, 70, 229, 0.08);
             border-color: var(--brand-primary);
-            color: var(--text-heading);
-            font-weight: 600;
+            color: var(--brand-primary);
+            font-weight: 700;
         }
 
         .step-item.completed {
-            border-color: rgba(16, 185, 129, 0.3);
+            border-color: rgba(5, 150, 105, 0.3);
             color: var(--brand-emerald);
         }
 
@@ -201,9 +198,7 @@
             margin-bottom: 60px;
         }
 
-        @media (max-width: 992px) {
-            .workspace { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 992px) { .workspace { grid-template-columns: 1fr; } }
 
         .panel {
             background: var(--bg-surface);
@@ -212,6 +207,7 @@
             padding: 24px;
             display: flex;
             flex-direction: column;
+            box-shadow: var(--shadow-sm);
         }
 
         .panel-header {
@@ -227,25 +223,22 @@
             font-size: 1rem;
             font-weight: 700;
             color: var(--text-heading);
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .tag {
             font-size: 0.75rem;
             font-weight: 600;
-            padding: 2px 8px;
+            padding: 3px 8px;
             border-radius: 4px;
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .tag-indigo { background: rgba(99, 102, 241, 0.12); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.25); }
-        .tag-rose { background: rgba(244, 63, 94, 0.12); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.25); }
-        .tag-emerald { background: rgba(16, 185, 129, 0.12); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.25); }
+        .tag-indigo { background: rgba(79, 70, 229, 0.08); color: var(--brand-primary); border: 1px solid rgba(79, 70, 229, 0.2); }
+        .tag-rose { background: rgba(225, 29, 72, 0.08); color: var(--brand-rose); border: 1px solid rgba(225, 29, 72, 0.2); }
+        .tag-emerald { background: rgba(5, 150, 105, 0.08); color: var(--brand-emerald); border: 1px solid rgba(5, 150, 105, 0.2); }
 
         .desc-box {
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--bg-canvas);
             border: 1px solid var(--border-subtle);
             border-radius: 8px;
             padding: 16px;
@@ -266,7 +259,7 @@
         }
 
         .concept-note {
-            background: rgba(99, 102, 241, 0.08);
+            background: rgba(79, 70, 229, 0.05);
             border-left: 3px solid var(--brand-primary);
             padding: 8px 12px;
             font-size: 0.825rem;
@@ -274,18 +267,17 @@
             border-radius: 0 6px 6px 0;
         }
 
-        /* Preset Buttons */
         .preset-title {
             font-size: 0.75rem;
             font-weight: 600;
-            color: var(--text-dim);
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 8px;
         }
 
         .preset-chip {
-            background: rgba(255, 255, 255, 0.04);
+            background: var(--bg-canvas);
             border: 1px solid var(--border-subtle);
             color: var(--text-body);
             padding: 6px 12px;
@@ -294,21 +286,18 @@
             cursor: pointer;
             margin-right: 6px;
             margin-bottom: 6px;
-            transition: all 0.15s ease;
         }
 
         .preset-chip:hover {
             background: var(--bg-surface-hover);
             border-color: var(--brand-primary);
-            color: var(--text-heading);
         }
 
         .preset-chip code {
             font-family: 'JetBrains Mono', monospace;
-            color: #818cf8;
+            color: var(--brand-primary);
         }
 
-        /* Inputs & Buttons */
         .form-group { margin-bottom: 16px; }
         
         .form-label {
@@ -322,13 +311,12 @@
         .form-control {
             width: 100%;
             padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.3);
+            background: #ffffff;
             border: 1px solid var(--border-subtle);
             border-radius: 8px;
             color: var(--text-heading);
             font-size: 0.9rem;
             font-family: 'JetBrains Mono', monospace;
-            transition: border-color 0.15s ease;
         }
 
         .form-control:focus {
@@ -344,32 +332,16 @@
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.15s ease;
         }
 
-        .btn-indigo {
-            background: var(--brand-primary);
-            color: white;
-        }
-
-        .btn-indigo:hover {
-            background: var(--brand-primary-hover);
-        }
-
-        .btn-ghost {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-body);
-        }
-
-        .btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-heading);
-        }
+        .btn-indigo { background: var(--brand-primary); color: white; }
+        .btn-indigo:hover { background: var(--brand-primary-hover); }
+        .btn-ghost { background: var(--bg-canvas); border: 1px solid var(--border-subtle); color: var(--text-body); }
+        .btn-ghost:hover { background: var(--bg-surface-hover); }
 
         /* Code & Query Inspector */
         .editor-container {
-            background: #090d16;
+            background: #0f172a;
             border: 1px solid var(--border-subtle);
             border-radius: 8px;
             font-family: 'JetBrains Mono', monospace;
@@ -378,26 +350,26 @@
         }
 
         .editor-bar {
-            background: #111726;
+            background: #1e293b;
             padding: 8px 14px;
-            border-bottom: 1px solid var(--border-subtle);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: space-between;
             font-size: 0.75rem;
-            color: var(--text-dim);
+            color: #94a3b8;
             text-transform: uppercase;
         }
 
         .editor-body {
             padding: 14px;
-            color: #a5b4fc;
+            color: #e2e8f0;
             white-space: pre-wrap;
             word-break: break-all;
         }
 
         .editor-body .kw { color: #f43f5e; font-weight: 600; }
-        .editor-body .str { color: #10b981; }
+        .editor-body .str { color: #34d399; }
 
         .result-callout {
             padding: 14px 16px;
@@ -408,15 +380,15 @@
         }
 
         .result-callout.show { display: block; }
-        .result-callout.alert-danger { background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.3); color: #fda4af; }
-        .result-callout.alert-success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
-        .result-callout.alert-muted { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-subtle); color: var(--text-muted); }
+        .result-callout.alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+        .result-callout.alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+        .result-callout.alert-muted { background: var(--bg-canvas); border: 1px solid var(--border-subtle); color: var(--text-muted); }
 
         /* Code Switch Tabs */
         .tab-bar {
             display: flex;
             gap: 4px;
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--bg-canvas);
             padding: 3px;
             border-radius: 8px;
             border: 1px solid var(--border-subtle);
@@ -437,7 +409,8 @@
 
         .tab-btn.active {
             background: var(--bg-surface);
-            color: var(--text-heading);
+            color: var(--brand-primary);
+            box-shadow: var(--shadow-sm);
         }
 
         .tab-pane { display: none; }
@@ -445,7 +418,7 @@
 
         /* Quiz Component */
         .quiz-card {
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--bg-canvas);
             border: 1px solid var(--border-subtle);
             border-radius: 8px;
             padding: 16px;
@@ -453,23 +426,22 @@
         }
 
         .quiz-opt {
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
             padding: 10px 12px;
             border-radius: 6px;
             margin-top: 8px;
             font-size: 0.875rem;
             cursor: pointer;
-            transition: all 0.15s ease;
         }
 
         .quiz-opt:hover {
             border-color: var(--brand-primary);
-            background: rgba(99, 102, 241, 0.08);
+            background: rgba(79, 70, 229, 0.04);
         }
 
-        .quiz-opt.correct { background: rgba(16, 185, 129, 0.15); border-color: var(--brand-emerald); color: #6ee7b7; }
-        .quiz-opt.wrong { background: rgba(244, 63, 94, 0.15); border-color: var(--brand-rose); color: #fda4af; }
+        .quiz-opt.correct { background: #f0fdf4; border-color: #86efac; color: #166534; }
+        .quiz-opt.wrong { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
 
         /* Sandbox Mode Layout */
         .sandbox-layout { display: none; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -534,7 +506,7 @@
                     <div style="flex: 1;">
                         <div class="desc-box">
                             <h4 id="step-subtitle">정상적인 사용자 인증 쿼리의 동작 방식</h4>
-                            <p id="step-desc">사용자가 입력한 아이디와 비밀번호가 데이터베이스 조회(SELECT) 쿼리와 결합되어 로그인 성공 여부를 판단하는 과정을 확인합니다.</p>
+                            <p id="step-desc">사용자가 입력한 아이디와 비밀번호가 데이터베이스 조회(SELECT) 쿼리와 결합되어 판단되는 과정을 확인합니다.</p>
                             <div id="step-concept" class="concept-note">
                                 💡 일반적인 로그인은 <code>WHERE username = '입력값' AND password_hash = '해시값'</code> 조건이 일치할 때 성립합니다.
                             </div>
@@ -937,7 +909,7 @@
 
             if (correct) {
                 opts[idx].classList.add('correct');
-                fb.style.color = '#6ee7b7';
+                fb.style.color = '#166534';
                 fb.innerHTML = '✨ 정답입니다! Prepared Statement는 파라미터를 단순 데이터로 수신하므로 SQL Injection을 근본 차단합니다.';
                 completed[currStep] = true;
                 const pill = document.getElementById(`pill-${currStep}`);
@@ -947,7 +919,7 @@
                 }
             } else {
                 opts[idx].classList.add('wrong');
-                fb.style.color = '#fda4af';
+                fb.style.color = '#991b1b';
                 fb.innerHTML = '❌ 다시 생각해보세요. 준비된 쿼리의 핵심은 코드와 데이터의 분리입니다.';
             }
         }
