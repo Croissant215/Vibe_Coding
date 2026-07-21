@@ -840,20 +840,55 @@
                 renderWin.innerText = `검색 결과: ${rawInput}`;
                 callout.className = 'result-callout show alert-success';
                 head.innerHTML = '🛡️ [HTML Escape 성공] 방어 성공';
-                detail.innerHTML = '특수문자가 안전하게 치환되어 악성 자바스크립트가 실행되지 않고 일반 텍스트로 표출되었습니다.';
+                detail.innerHTML = '특수문자가 안전하게 치환(Sanitization)되어 악성 자바스크립트가 실행되지 않고 일반 텍스트로 표출되었습니다.';
             } else {
                 domOut.textContent = `[Backend Raw Output]: ${res.raw_html}`;
                 renderWin.innerHTML = `<div>검색 결과: ${rawInput}</div>`;
 
+                // HTML5 innerHTML script execution fix: dynamically create script DOM node to trigger real browser alert
                 if (res.is_vulnerable) {
                     callout.className = 'result-callout show alert-danger';
                     head.innerHTML = '🚨 [Reflected XSS 취약점 발생!]';
-                    detail.innerHTML = '입력된 자바스크립트 코드가 브라우저 DOM 환경에서 해석 및 실행되었습니다!';
+                    detail.innerHTML = '입력된 자바스크립트 코드가 브라우저 DOM 환경에서 해석 및 동적 실행되었습니다!';
+                    
+                    setTimeout(() => {
+                        executeDynamicXSS(renderWin, rawInput);
+                    }, 50);
                 } else {
                     callout.className = 'result-callout show alert-success';
                     head.innerHTML = '✅ [정상 렌더링 완료]';
                     detail.innerHTML = '입력된 텍스트가 정상 렌더링되었습니다.';
                 }
+            }
+        }
+
+        function executeDynamicXSS(container, rawInput) {
+            // Extract and execute <script> tags
+            const scriptRegex = /<script[\s\S]*?>([\s\S]*?)<\/script>/gi;
+            let match;
+            while ((match = scriptRegex.exec(rawInput)) !== null) {
+                const code = match[1];
+                if (code.trim()) {
+                    try {
+                        const scriptNode = document.createElement('script');
+                        scriptNode.textContent = code;
+                        document.body.appendChild(scriptNode);
+                        document.body.removeChild(scriptNode);
+                    } catch (e) {
+                        console.error('XSS Execution Error:', e);
+                    }
+                }
+            }
+
+            // Handle inline event handlers like onerror or onload
+            if (rawInput.includes('onerror=') || rawInput.includes('onload=')) {
+                // innerHTML already triggers img onerror dynamically when added to DOM
+                const imgs = container.querySelectorAll('img');
+                imgs.forEach(img => {
+                    if (img.onerror) {
+                        try { img.onerror(); } catch(e) {}
+                    }
+                });
             }
         }
 
