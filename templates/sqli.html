@@ -105,6 +105,27 @@
             color: var(--text-muted);
         }
 
+        .nav-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .nav-back-btn:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
         .mode-switcher {
             display: flex;
             background: rgba(15, 23, 42, 0.6);
@@ -446,30 +467,10 @@
             box-shadow: 0 4px 16px rgba(244, 63, 94, 0.3);
         }
 
-        .btn-danger:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(244, 63, 94, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--accent-emerald), #059669);
-            color: white;
-            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-        }
-
         .btn-secondary {
             background: rgba(30, 41, 59, 0.8);
             border: 1px solid var(--border-glass);
             color: var(--text-main);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(51, 65, 85, 0.8);
         }
 
         /* Navigation Button Bar */
@@ -521,7 +522,6 @@
 
         .code-block .sql-kw { color: #f43f5e; font-weight: 700; }
         .code-block .sql-str { color: #10b981; }
-        .code-block .sql-inj { color: #f59e0b; background: rgba(245, 158, 11, 0.15); padding: 0 4px; border-radius: 3px; font-weight: 700; }
 
         .result-box {
             padding: 14px 18px;
@@ -653,10 +653,11 @@
         <!-- Top Header -->
         <header>
             <div class="logo-area">
+                <a href="/" class="nav-back-btn">← 메인 허브로</a>
                 <div class="logo-icon">🔐</div>
                 <div class="logo-title">
                     <h1>SQL Injection & 시큐어 코딩 학습 스튜디오</h1>
-                    <p>Interactive Step-by-Step Security Lab</p>
+                    <p>Module 1: Database Security Lab</p>
                 </div>
             </div>
             <div class="mode-switcher">
@@ -867,7 +868,7 @@
                         <input type="text" id="reg-username" class="form-input" placeholder="새 아이디 (3자 이상)" style="margin-bottom: 8px;">
                         <input type="password" id="reg-password" class="form-input" placeholder="새 비밀번호 (4자 이상)">
                     </div>
-                    <button onclick="runRegister()" class="btn btn-success">➕ 새 계정 등록하기</button>
+                    <button onclick="runRegister()" class="btn btn-success" style="width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">➕ 새 계정 등록하기</button>
                     <div id="reg-result" class="result-box" style="margin-top: 10px;"></div>
                 </div>
 
@@ -987,6 +988,7 @@
         };
 
         let currentStep = 1;
+        let completedSteps = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
 
         document.addEventListener('DOMContentLoaded', () => {
             renderStep(1);
@@ -1034,7 +1036,6 @@
                 presetBox.style.display = 'none';
             }
 
-            // Form visibility logic
             const stepForm = document.getElementById('step-form');
             if (data.hideForm) {
                 stepForm.style.display = 'none';
@@ -1079,8 +1080,6 @@
             document.getElementById('input-password').value = pass;
         }
 
-        let completedSteps = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
-
         function escapeHtml(text) {
             return text.replace(/'/g, "\\'");
         }
@@ -1109,7 +1108,6 @@
                 const result = await response.json();
                 renderQueryResult(result, data.formTarget);
 
-                // Mark current step as completed
                 completedSteps[currentStep] = true;
                 const pill = document.getElementById(`pill-${currentStep}`);
                 if (pill) {
@@ -1177,7 +1175,6 @@
         }
 
         function nextStep() {
-            // Check if current step has action or quiz, or requires execution
             if (currentStep < 5 && !completedSteps[currentStep]) {
                 const confirmSkip = confirm(`⚠️ [Step ${currentStep}] 단계의 실습을 아직 완료하지 않으셨습니다.\n아이디/비밀번호를 입력하고 [▶️ 실행 및 로그인 테스트] 버튼을 누르거나 '빠른 테스트 입력 세팅'을 활용하세요!\n\n그래도 다음 단계로 건너뛰시겠습니까?`);
                 if (!confirmSkip) return;

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인증/인가 & IDOR 방어 인터랙티브 학습 스튜디오</title>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #090d16;
+            --bg-card: rgba(18, 24, 38, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --primary-glow: rgba(16, 185, 129, 0.35);
+            
+            --accent-cyan: #06b6d4;
+            --accent-rose: #f43f5e;
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-sub: #64748b;
+            
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+        body { background-color: var(--bg-deep); background-image: radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.15) 0px, transparent 50%); color: var(--text-main); min-height: 100vh; padding: 24px; }
+
+        .container { max-width: 1280px; margin: 0 auto; }
+        header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); margin-bottom: 24px; }
+
+        .nav-back-btn { padding: 8px 16px; background: rgba(30, 41, 59, 0.8); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 600; text-decoration: none; }
+        .progress-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 24px; }
+        .progress-track { height: 10px; background: rgba(15, 23, 42, 0.8); border-radius: 999px; overflow: hidden; border: 1px solid var(--border-glass); margin-bottom: 16px; }
+        .progress-fill { height: 100%; width: 20%; background: linear-gradient(90deg, var(--primary), var(--accent-cyan)); border-radius: 999px; }
+
+        .step-pills { display: flex; gap: 8px; overflow-x: auto; }
+        .step-pill { flex: 1; min-width: 140px; padding: 10px 14px; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-glass); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--text-muted); cursor: pointer; text-align: center; }
+        .step-pill.active { background: rgba(16, 185, 129, 0.15); border-color: var(--primary); color: var(--text-main); font-weight: 600; }
+
+        .workspace-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 24px; }
+        .card-panel { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); padding: 28px; }
+        .form-input { width: 100%; padding: 12px 16px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-glass); border-radius: var(--radius-md); color: var(--text-main); font-size: 0.95rem; }
+        .btn { width: 100%; padding: 12px 20px; border-radius: var(--radius-md); border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+        .btn-emerald { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <a href="/" class="nav-back-btn">← 메인 허브로</a>
+                <div style="width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), var(--accent-cyan)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🔑</div>
+                <div>
+                    <h1 style="font-size: 1.25rem;">인증/인가 & IDOR 취약점 학습 스튜디오</h1>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Module 4: Insecure Direct Object Reference & RBAC Lab</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="progress-card">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                <div style="font-weight: 600; color: var(--primary);">🎯 진행 상태 <span id="step-badge">Step 1 / 5</span></div>
+                <div id="progress-percent" style="font-weight: 700;">20% 완료</div>
+            </div>
+            <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+            <div class="step-pills">
+                <button id="pill-1" class="step-pill active" onclick="jumpStep(1)">1. 내 프로필 조회</button>
+                <button id="pill-2" class="step-pill" onclick="jumpStep(2)">2. IDOR 변조 조회</button>
+                <button id="pill-3" class="step-pill" onclick="jumpStep(3)">3. 세션 기반 인가 검증</button>
+                <button id="pill-4" class="step-pill" onclick="jumpStep(4)">4. RBAC 권한 제어</button>
+                <button id="pill-5" class="step-pill" onclick="jumpStep(5)">5. 인가 퀴즈 및 완수</button>
+            </div>
+        </div>
+
+        <div class="workspace-grid">
+            <div class="card-panel">
+                <h3 id="step-title" style="font-size: 1.15rem; color: var(--primary); margin-bottom: 8px;">1. 본인 회원 정보 조회</h3>
+                <p id="step-desc" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">로그인한 사용자(user_id=101)가 본인의 마이페이지 프로필 정보를 요청합니다.</p>
+
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px;">조회할 회원 번호 (user_id)</label>
+                        <input type="number" id="userid-input" class="form-input" value="101" required>
+                    </div>
+                    <button type="submit" class="btn btn-emerald">🔍 프로필 정보 조회 API 호출</button>
+                </form>
+            </div>
+
+            <div class="card-panel">
+                <h4 style="font-size: 1rem; color: var(--text-main); margin-bottom: 12px;">📊 API 응답 데이터 (JSON Response)</h4>
+                <div style="background: #050811; padding: 16px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #a5b4fc; min-height: 160px;" id="auth-response-box">
+{
+  "status": "ready",
+  "message": "조회 버튼을 클릭하세요."
+}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currStep = 1;
+        function jumpStep(n) {
+            currStep = n;
+            document.getElementById('step-badge').textContent = `Step ${n} / 5`;
+            document.getElementById('progress-percent').textContent = `${n * 20}% 완료`;
+            document.getElementById('progress-fill').style.width = `${n * 20}%`;
+            for (let i = 1; i <= 5; i++) document.getElementById(`pill-${i}`).classList.toggle('active', i === n);
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const idVal = document.getElementById('userid-input').value;
+            const resBox = document.getElementById('auth-response-box');
+
+            if (currStep === 2 && idVal !== "101") {
+                resBox.innerHTML = `{<br>  "status": 200,<br>  "is_idor_vulnerable": true,<br>  "user_id": ${idVal},<br>  "username": "victim_user_${idVal}",<br>  "ssn": "900101-1******",<br>  "address": "서울특별시 강남구 테헤란로 123",<br>  "warning": "🚨 [IDOR 취약점 발생] 로그인한 사용자(101)가 URL/파라미터 숫자만 바꾸어 타인(${idVal})의 민감 정보를 무단 탈취했습니다!"<br>}`;
+            } else if (currStep === 3) {
+                resBox.innerHTML = `{<br>  "status": 403,<br>  "error": "Access Denied",<br>  "message": "🛡️ [보안 인가 검증 성공] 요청 파라미터 대신 세션(Session)에 등록된 본인 식별자만 접근 가능합니다!"<br>}`;
+            } else {
+                resBox.innerHTML = `{<br>  "status": 200,<br>  "user_id": ${idVal},<br>  "username": "my_account",<br>  "email": "user101@example.com"<br>}`;
+            }
+        }
+    </script>
+</body>
+</html>

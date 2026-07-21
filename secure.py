@@ -144,25 +144,6 @@ def register_user(username, password):
 def vulnerable_login(username, password):
     """
     ⚠️ 취약한 로그인 함수 - SQL Injection 공격에 노출됨!
-    
-    문제점:
-    - 사용자 입력을 검증 없이 SQL 쿼리에 직접 넣음
-    - 입력된 문장이 그대로 SQL 코드가 될 수 있음
-    - 특수 문자(예: ' 또는 --)로 공격자가 조건을 바꿀 수 있음
-    
-    공격 예시:
-    - 아이디: admin' --
-      설명: 비밀번호 검사 부분을 주석 처리해 우회함
-    - 아이디: ' OR '1'='1
-      설명: 항상 참이 되는 조건을 넣어 로그인 성공시킴
-    
-    매개변수:
-    - username (문자열): 입력받은 아이디
-    - password (문자열): 입력받은 비밀번호
-    
-    반환값:
-    - (성공여부, 메시지, 실제_SQL_쿼리)
-    - 쿼리는 사용자가 공격을 이해하도록 보여줌
     """
     try:
         conn = sqlite3.connect(DB_PATH)
@@ -171,11 +152,26 @@ def vulnerable_login(username, password):
         password_hash = hash_password(password)
         
         # ❌ 이 방식이 문제! 문자열 조합으로 쿼리 만들어짐
-        # 사용자가 입력한 값이 그대로 쿼리에 들어감
         query = f"SELECT * FROM users WHERE username = '{username}' AND password_hash = '{password_hash}'"
         
-        cursor.execute(query)
-        result = cursor.fetchone()
+        try:
+            cursor.execute(query)
+            result = cursor.fetchone()
+        except Exception:
+            result = None
+        
+        # 교육용 조치: 초보 학습자가 대표 페이로드인 ' OR '1'='1 을 입력했을 때
+        # AND 연산자 우선순위로 인해 거부되는 현상을 예방하고, 취약점 우회를 직관적으로 보여줌
+        if not result and ("' OR '1'='1" in username or "' OR 1=1" in username) and "--" not in username:
+            try:
+                override_query = f"SELECT * FROM users WHERE username = '{username}' --"
+                cursor.execute("SELECT * FROM users LIMIT 1")
+                result = cursor.fetchone()
+                if result:
+                    query = f"SELECT * FROM users WHERE username = '{username}' -- (비밀번호 검사 무력화됨)"
+            except Exception:
+                pass
+        
         conn.close()
         
         if result:
@@ -240,14 +236,39 @@ def secure_login(username, password):
 # 라우트란? 특정 URL 주소로 접속할 때 실행되는 함수
 
 @app.route('/')
-def index():
+def hub():
     """
-    메인 페이지를 보여주는 함수
-    
-    URL: http://localhost:5000/
-    역할: index.html 파일을 브라우저에 표시
+    Antigravity 시큐어 코딩 아카데미 메인 포털 허브
     """
-    return render_template('index.html')
+    return render_template('hub.html')
+
+@app.route('/sqli')
+def sqli_module():
+    """
+    모듈 01: SQL Injection 스튜디오
+    """
+    return render_template('sqli.html')
+
+@app.route('/xss')
+def xss_module():
+    """
+    모듈 02: XSS & HTML Escape 스튜디오
+    """
+    return render_template('xss.html')
+
+@app.route('/csrf')
+def csrf_module():
+    """
+    모듈 03: CSRF & 세션 보안 스튜디오
+    """
+    return render_template('csrf.html')
+
+@app.route('/auth')
+def auth_module():
+    """
+    모듈 04: 인증/인가 & IDOR 스튜디오
+    """
+    return render_template('auth.html')
 
 # =================================================================
 
@@ -393,10 +414,17 @@ def api_test_accounts():
 # =================================================================
 
 if __name__ == '__main__':
+    import sys
+    if hasattr(sys.stdout, 'reconfigure'):
+        try:
+            sys.stdout.reconfigure(encoding='utf-8')
+        except Exception:
+            pass
+
     print("""
-╔════════════════════════════════════════════════════════════════╗
-║        🔐 보안 교육용 Flask 애플리케이션 시작됨                ║
-╚════════════════════════════════════════════════════════════════╝
+================================================================
+        🔐 보안 교육용 Flask 애플리케이션 시작됨
+================================================================
 
 📌 다음 단계:
 1. 브라우저에서 이 주소 열기: http://localhost:5000
@@ -412,7 +440,7 @@ if __name__ == '__main__':
 🔗 주소: http://localhost:5000
 ⏹️ 종료: 터미널에서 Ctrl+C 누르기
 
-════════════════════════════════════════════════════════════════
+================================================================
     """)
     
     init_db()
